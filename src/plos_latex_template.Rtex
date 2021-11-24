@@ -103,6 +103,9 @@
 % color can be used to apply background shading to table cells only
 \usepackage[table]{xcolor}
 \definecolor{fgcolor}{rgb}{0,0,0}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
 
 % array package and thick rules for tables
 \usepackage{array}
@@ -234,6 +237,10 @@ with the Lorem Ipsum Consortium\textsuperscript{\textpilcrow}
 % Use the asterisk to denote corresponding authorship and provide email address in note below.
 * correspondingauthor@institute.edu
 
+<< run analysis code, include=FALSE >>=
+source('R/analysis.R')
+@
+
 \end{flushleft}
 % Please keep the abstract below 300 words
 \section*{Abstract}
@@ -243,8 +250,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta er
 % Please keep the Author Summary between 150 and 200 words
 % Use first person. PLOS ONE authors please skip this step. 
 % Author Summary not valid for PLOS ONE submissions.   
-\section*{Author summary}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
+% \section*{Author summary}
+% Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
 
 \linenumbers
 
@@ -252,17 +259,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta er
 \section*{Introduction}
 Lorem ipsum dolor sit~\cite{yanivReceivingOtherPeople2004} amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam Eq~(\ref{eq:schemeP}) sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id.~\cite{yanivUsingAdviceMultiple2007} Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
 
-<< block-1 >>=
-set.seed(123)
-x = runif(10)
-sd(x)  # standard deviation
-@
-
-Now we know the first element of x is \Sexpr{x[1]}. And we also know
-the 26 letters are \Sexpr{LETTERS}. An expression that returns a
-value of length 0 will be removed from the output, \Sexpr{x[1] =
-  2011; NULL} but it was indeed evaluated, e.g. now the first element
-of x becomes \Sexpr{x[1]}.
+We know the \Sexpr{advisor_profile_name(6)} advisor.
 
 \begin{eqnarray}
 \label{eq:schemeP}
