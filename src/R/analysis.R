@@ -7,6 +7,8 @@
 ### Libraries -----------------------------------------------------------
 
 library(tidyverse)  # Pipes, tidyselectors, string manipulation, data wrangling, etc.
+library(glue) # Nice string construction
+library(broom) # tidy-style tests
 library(esmData)    # My own data package holding the data for the project (`remotes::install_github('oxacclab/esmData')`)
 
 ### Configuration -------------------------------------------------------
@@ -35,6 +37,14 @@ theme_set(
 )
 
 ### Functions -----------------------------------------------------------
+
+#' Turn a number into a </= X representation
+n2s <- function(n, digits = 4, limit = 10^-digits) 
+  if_else(
+    n < limit, 
+    glue('< {limit}'), 
+    glue('= {round(n, digits)}')
+  )
 
 #' Go through the workspace and remove excluded pids from all tbls with a pid 
 #' field, creating backups along the way
@@ -264,6 +274,14 @@ for (E in dots) {
     mutate(Advisor = factor(advisor_profile_name(adviceType))) %>%
     filter(typeName == "force", !is.na(Advisor)) %>%
     order_factors()
+  
+  E$test <- E$trials %>% 
+    filter(hasChoice) %>%
+    mutate(
+      Advisor = advisor_profile_name(adviceType),
+      Advisor = factor(Advisor)
+    ) %>%
+    order_factors()
 }
 
 
@@ -275,6 +293,15 @@ for (n in names(dots)) {
   familiarisation <- bind_rows(
     familiarisation,
     dots[[n]]$familiarisation %>% mutate(E = n)
+  )
+}
+
+test <- NULL
+
+for (n in names(dots)) {
+  test <- bind_rows(
+    test,
+    dots[[n]]$test %>% mutate(E = n)
   )
 }
 
@@ -435,3 +462,72 @@ for (n in names(dates)) {
   )
 }
 
+
+### Join binary data ---------------------------------------------------
+
+Bin <- bind_rows(
+  familiarisation %>%
+    filter(!practice) %>%
+    transmute(
+      task = "Dots",
+      experiment = E,
+      pid = paste0("dots_", pid),
+      feedback = F,
+      Advisor,
+      has_choice = hasChoice,
+      answer_initial = initialAnswer,
+      answer_final = finalAnswer,
+      confidence_initial = initialConfidence,
+      confidence_final = finalConfidence,
+      influence = advisorInfluenceRaw,
+      influence_capped = advisorInfluence
+    ),
+  test %>%
+    filter(!practice) %>%
+    transmute(
+      task = "Dots",
+      experiment = E,
+      pid = paste0("dots_", pid),
+      feedback = F,
+      Advisor,
+      has_choice = hasChoice,
+      answer_initial = initialAnswer,
+      answer_final = finalAnswer,
+      confidence_initial = initialConfidence,
+      confidence_final = finalConfidence,
+      influence = advisorInfluenceRaw,
+      influence_capped = advisorInfluence
+    ),
+  Test %>% 
+    filter(!is.na("responseAnswerSide")) %>%
+    transmute(
+      task = "Dates",
+      experiment = E,
+      pid = paste0("dates_", pid),
+      feedback,
+      Advisor,
+      has_choice = advisorChoice,
+      answer_initial = responseAnswerSide,
+      answer_final = responseAnswerSideFinal,
+      confidence_initial = responseConfidenceScore,
+      confidence_final = responseConfidenceScoreFinal,
+      influence = advisor0Influence,
+      influence_capped = advisor0InfluenceCapped
+    ),
+  Familiarisation %>% 
+    filter(!is.na("responseAnswerSide")) %>%
+    transmute(
+      task = "Dates",
+      experiment = E,
+      pid = paste0("dates_", pid),
+      feedback,
+      Advisor,
+      has_choice = advisorChoice,
+      answer_initial = responseAnswerSide,
+      answer_final = responseAnswerSideFinal,
+      confidence_initial = responseConfidenceScore,
+      confidence_final = responseConfidenceScoreFinal,
+      influence = advisor0Influence,
+      influence_capped = advisor0InfluenceCapped
+    )
+)
