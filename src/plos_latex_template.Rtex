@@ -170,6 +170,10 @@
 
 %% Include all macros below
 
+ % Trying to supress "pdfTeX error (font expansion): auto expansion is only possible with scalable fonts." 
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
 %% for inline R code: if the inline code is not correctly parsed, you will see a message
 \newcommand{\rinline}[1]{SOMETHING WRONG WITH knitr}
 %% begin.rcode setup, include=FALSE
@@ -286,9 +290,216 @@ Please keep the abstract below 300 words
 
 \section*{Materials and methods}
 
+\subsection*{Ethics}
+
+Ethical approval for the studies in the thesis was granted by the University of Oxford Medical Sciences Interdivisional Research Ethics Committee (References: R55382/RE001; R55382/RE002).
+
 \subsection*{Participants}
-We had participants. 
-They did stuff.
+
+<< calculate total participants, include=FALSE >>=
+
+# Exclusion totals
+
+#' Look through each environment and sum up the exclusions matching f(Reason)
+f <- function(f) {
+  p <- 0
+  for (e in c(dots, dates)) {
+    n <- e$exclusions_summary %>% 
+      filter(f(Reason)) %>% 
+      pull(`Participants excluded`) %>%
+      sum()
+    p <- p + n
+  }
+  p
+}
+
+# Included 
+pp.i <- f(\(x) str_ends(x, "Total remaining"))
+# Excluded
+pp.x <- f(\(x) str_ends(x, "Total excluded"))
+
+
+x.trial_count <- f(\(x) str_starts(x, "Too few"))
+x.no_advice <- f(\(x) str_starts(x, "Insufficient advice-taking"))
+x.translation <- f(\(x) str_starts(x, "Wrong markers"))
+x.bad_advice <- f(\(x) str_starts(x, "Non-numeric"))
+x.acc_oob <- f(\(x) str_starts(x, "Accuracy"))
+x.conf_compressed <- f(\(x) str_ends(x, "confidence categories"))
+
+
+t.dots <- lapply(dots, \(x) {
+  x$participants %>% 
+    transmute(mins = (timeEnd - timeStart)/1000/60) %>%
+    pull(mins)
+}) %>%
+  unlist()
+
+t.dates <- lapply(dates, \(x) {
+  left_join(
+    transmute(x$`study-details`, pid, start = clientTime),
+    transmute(x$`debrief-form`, pid, end = clientTime),
+    by = "pid"
+  ) %>%
+    mutate(mins = (end - start)/1000/60) %>%
+    pull(mins)
+}) %>%
+  unlist()
+
+markers <- dates$ava$Test %>%
+  bind_rows(dates$ava.pre$Test) %>%
+  group_by(responseMarkerWidth) %>%
+  summarise(v = mean(responseMarkerValue)) %>%
+  rename(m = responseMarkerWidth)
+
+@
+
+Before exclusions, we collected data over the internet from \Sexpr{pp.i + pp.x} participants in these experiments. 
+We deliberately did not collect demographic data from participants to avoid data dredging along irrelevant dimensions, so we do not detail their ages, gender identity, location, eyesight, or language ability.
+All participants were at least 18 years of age, confirmed by the requirements for possessing an account on the Prolific platform and by explicit confirmation when giving informed consent.
+Participants were excluded from the Dates Task for:
+having too many trials with data saving issues, or that took too long (N = \Sexpr{x.trial_count});
+and adjusting their after advice on fewer than \Sexpr{minChangeRate * 100}\% of trials (N = \Sexpr{x.no_advice});
+using translation software to translate questions (N = \Sexpr{x.translation}).
+Participants were excluded from the Dots Task for:
+having initial accuracy below \Sexpr{accuracyRange[1] * 100}\% or above \Sexpr{accuracyRange[2] * 100}\% (N = \Sexpr{x.acc_oob});
+and having a confidence distribution that was too compressed or too skewed to generate contingent advice (N = \Sexpr{x.conf_compressed}).
+Overall, \Sexpr{pp.x} participants were excluded (some participants met multiple exclusion criteria).
+Data from \Sexpr{pp.i} participants formed the data set analysed in the results section below.
+
+Participants were recruited to the experiment via the Prolific Academic participant recruitment platform (\url{https://prolific.co}).
+Participants were prevented from taking the experiment if they had participated in one of the other experiments in the thesis, or if they had an overall approval rating on Prolific of less than 95/100.
+After reading the description of the experiment and accepting the work on the recruitment platform, participants took part in the experiment by clicking a link to the website that housed the experiment, hosted on our lab web server.
+Upon landing on the experiment page, participants were directed to the participant information and consent pages.
+After consent was obtained, they were routed to the correct experiment page, and the experiment began.
+After completing the experiment, participants were provided with an alphanumeric code they could submit on Prolific in exchange for payment. 
+Participants were paid approximately £15/hour.
+The Dots Task experiments lasted approximately \Sexpr{round(mean(t.dots))} minutes (minimum = \Sexpr{round(min(t.dots))}; median = \Sexpr{median(round(t.dots))}; maximum = \Sexpr{round(max(t.dots))}) and the Dates Task experiments lasted approximately \Sexpr{round(mean(t.dates))} minutes (minimum = \Sexpr{round(min(t.dates))}; median = \Sexpr{median(round(t.dates))}; maximum = \Sexpr{round(max(t.dates))}).
+Dates Task experiments included attention checks which terminated the study as a consequence for failure; participants excluded in this way are not detailed in the exclusions above.
+
+\subsection*{Procedure}
+
+<< trial counts, include=FALSE >>=
+tc.dots <- lapply(1:length(dots), \(i) 
+                  mutate(dots[[i]]$trials, E = names(dots)[i])) %>%
+  bind_rows() %>% 
+  group_by(E, block, pid) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
+  summarise(length = length(unique(n)), n = mean(n), .groups = "drop")
+
+tc.dates <- lapply(1:length(dates), \(i) 
+                   bind_rows(
+                     dates[[i]]$AdvisedTrial, 
+                     dates[[i]]$Trial,
+                     dates[[i]]$practiceTrial,
+                     dates[[i]]$practiceAdvisedTrial
+                   ) %>%
+                     mutate(E = names(dates)[i])) %>%
+  bind_rows() %>% 
+  group_by(E, block, pid) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
+  summarise(length = length(unique(n)), n = mean(n), .groups = "drop")
+@
+
+Participants performed one of two tasks: the Dots Task or the Dates Task. 
+Both of these tasks followed the same general Judge-Advisor System structure.
+On each trial, participants made an initial decision on the decision-making task.
+Next, participants received advice. 
+The advice was always computer-generated, although the specifics of the generating procedure varied between experiments to produce advisors with different styles of advice-giving.
+In familiarisation blocks, participants received this advice from one of two advisors, whereas in test blocks the participants could choose which of their two advisors gave the advice on each trial.
+After seeing the advice, participants input a final decision.
+Participants saw feedback each trial indicating whether or not their own final decision was correct only during initial practice questions, unless they were assigned to the feedback condition of the Dates Task, in which case they received feedback on all trials except the final block of advisor choice trials.
+After all trials were completed, debrief questions were presented and feedback provided concerning the participant's performance, including a stable link to the feedback and a payment code.
+The debrief questions included a questionnaire asking participants to rate their advisors' likeability, ability, and benevolence \cite{mayerIntegrativeModelOrganizational1995}, and offering them the opportunity to provide free-text comments on the advisors and the experiment in general.
+These questionnaire responses are not analysed because they were generally uninformative.
+
+Participants indicated their decisions by entering a combined direction and confidence judgement, selecting the left side of the response scale for leftward decisions and the right side of the response scale for rightward decisions, and indicating confidence by selecting parts of the scale further away from the centre.
+On final decisions, participants could see their initial estimate marked on the response scale.
+
+\subsubsection*{Dots Task}
+
+The Dots Task allows for precise control over the objective accuracy of a participant's answers, while allowing for a fairly broad range of subjective confidence.
+The Dots Task is the experimental task used in the work we were attempting to extend.\cite{pescetelliRoleDecisionConfidence2021}
+
+The decision-making task in the Dots Task was judging which of two briefly (300ms) and simultaneously presented boxes contained more dots.\cite{steinhauserDecisionProcessesHuman2010}\cite{pescetelliConfidenceAdviceSeeking2021}\cite{rouaultFormingGlobalEstimates2019}\cite{flemingDomainspecificImpairmentMetacognitive2014}
+The dots did not move during the presentation of the stimulus.
+The Dots Task includes a staircasing procedure that varies the difference in the number of dots in each box dynamically using a 2-up 1-down procedure.
+The staircasing procedure results in participants converging on an initial estimate accuracy of around 71\%.
+The number of dots was determined by the difficulty of the trial: the box with the least dots had 200 - the difficulty, while the box with the most had 200 + the difficulty.
+
+The Dots Task started a simple interactive tutorial explaining the task and the response bar, followed by two practice blocks of \Sexpr{tc.dots$n[2]} trials so that participants could get used to the task and the staircasing algorithm could titrate the difficulty appropriately (the staircasing continued during the remainder of the experiment).
+Participants then performed \Sexpr{tc.dots$n[3]} trials with advice to get used to receiving and using advice.
+The main experiment consisted of three blocks: in the first two of these participants were advised by one advisor; and in the final block they were able to choose between their two advisors on each trial.
+Each experimental block contained \Sexpr{tc.dots$n[4]} trials.
+The exception to this rule is that the experiment contrasting high accuracy and high agreement advisors had only \Sexpr{tc.dots %>% filter(E == 'ava', block == 2) %>% .$n} practice advice trials and \Sexpr{tc.dots %>% filter(E == 'ava', block == 5) %>% .$n} choice trials.
+
+\subsubsection*{Dates Task}
+
+The Dates Task is shorter and more engaging than the Dates Task, as well as being more similar to tasks used in previous Judge-Advisor System implementations. \cite{yanivAdviceTakingDecision2000}\cite{yanivUsingAdviceMultiple2007}\cite{ginoWeListenAdvice2008}
+
+The Dates Task used a decision-making task that required participants to identify whether 20th Century events occurred before or after a particular date. 
+In each trial, participants saw a text representation of an event that occurred in a specific year of the 20th Century, for example "Roger Bannister runs the first 4-minute mile", which occurred in 1954; or "US-led coalition expels the Iraqi Army from Kuwait in Operation Desert Storm", which occurred in 1991. 
+The participant also saw a date written below the event, and two bars labelled 'Before' (on the left) and 'After' (on the right). 
+Participants indicated their answers by selecting one of the bars, choosing a point higher up the bar the more confident they were in their choice.
+
+The (categorical) Dates Task started with an interactive tutorial, \Sexpr{tc.dates$n[4] - 2} warm-up questions to give participants a chance to calibrate their confidence, and a tutorial on advice.
+Thereafter the participants performed three blocks of experimental trials. 
+In the first two blocks, participants were advised by a single advisor, and in the final block they were able to choose between those advisors. 
+The familiarisation blocks where advisors were assigned automatically consisted of \Sexpr{round(tc.dates$n[2])} trials, and the test block containing a choice of advisors contained \Sexpr{round(tc.dates$n[3])} trials.
+
+\subsubsection*{Continuous Dates Task}
+
+The continuous Dates Task provides a more open-ended question to participants, more closely modelled on previous Judge-Advisor System work. \cite{yanivAdviceTakingDecision2000}\cite{yanivUsingAdviceMultiple2007}\cite{ginoWeListenAdvice2008}
+The continuous Dates Task does not, however, allow for straightforward categorisation of responses and advice according to dimensions of accuracy and agreement.
+
+Unlike the other tasks, the Dates Task version of the high accuracy versus high agreement used a continuous response rather than a binary decision with confidence.
+Participants saw questions from the same set as in the categorical version of the task, but did not see a date.
+Instead, participants indicated their decision by dragging a marker onto a timeline so that it covered a span of years.
+Participants could choose from markers that were \Sexpr{markers$m[1]}, \Sexpr{markers$m[2]}, and \Sexpr{markers$m[3]} years wide, worth \Sexpr{markers$v[1]}, \Sexpr{markers$v[2]}, and \Sexpr{markers$v[3]} points, respectively.
+Points were scored on trials where the participant's marker covered the year in which the event occurred.
+Points were arbitrary, and unrelated to remuneration, but were included to encourage participants to vary marker size as a function of their confidence in their answer.
+
+The experiment trial structure was identical to that for the categorical Dates Task, with the exception that some of the participants experienced only \Sexpr{round(tc.dates$n[13])} trials in each familiarisation block because the preregistered replication (see below) for this experiment was shortened.
+
+\subsection*{Preregistration}
+
+Each individual experiment was preregistered using the Open Science Framework (\url{https://osf.io/}), with the exception of the Dots Task experiment with high agreement versus low agreement advisors, which was not preregistered due to an oversight.
+The preregistration links are available in Table~\ref{prereg}.
+
+<< prereg table, include=FALSE >>=
+preregs <- lapply(dots, \(x) x$dotstask) %>% 
+  bind_rows() %>% 
+  transmute(task = "Dots Task", study, pr = preregistration) %>% 
+  unique()
+preregs <- lapply(dates, \(x) x$datequiz) %>% 
+  bind_rows() %>% 
+  transmute(task = "Dates Task", study, pr = preregistration) %>%
+  unique() %>% 
+  bind_rows(preregs)
+@
+
+\begin{table}[!ht]
+\begin{adjustwidth}{-2.25in}{0in} % Comment out/remove adjustwidth environment if table fits in text column.
+\centering
+\caption{{\bf Preregistration links for each experiment.}}
+\begin{tabular}{|l+l|l|l|l|l|l|l|}
+\hline
+{\bf Advisors} & {\bf Dots Task} & {\bf Dates Task}\\ \thickhline
+High accuracy versus low accuracy & \url{\Sexpr{preregs$pr[5]}} & \url{\Sexpr{preregs$pr[1]}}\\ \hline
+High agreement versus low agreement & \textit{Omitted by oversight} & \url{\Sexpr{preregs$pr[2]}}\\ \hline
+High accuracy versus high agreement & \url{\Sexpr{preregs$pr[7]}} & \url{\Sexpr{preregs$pr[3]}}\\ \hline
+Bias-sharing versus anti-bias & \url{\Sexpr{preregs$pr[8]}} & \textit{Not run}\\ \hline
+\end{tabular}
+\label{prereg}
+\end{adjustwidth}
+\end{table}
+
+\subsubsection*{Deviations}
+There were several deviations from the preregistered plan for these experiments.
+Firstly, preregistrations for the Dots Task stated that participants beyond the stated sample size of 50 would be dropped.
+In this paper we include the participants who would have been excluded on the basis of this criterion.
+Excluding participants according to the preregistered plan produced the same results.
+Similarly, the Dates Task in which participants chose between high agreement and high accuracy advisors was conducted as two separate studies: a pilot experiment and a preregistered replication. 
+In this paper we combine the data for these two experiments to streamline the reporting process (the results in the experiments when analysed individually are highly similar and qualitatively identical).
 
 % Results and Discussion can be combined.
 \section*{Results}

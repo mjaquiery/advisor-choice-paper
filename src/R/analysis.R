@@ -14,12 +14,12 @@ library(esmData)    # My own data package holding the data for the project (`rem
 ### Configuration -------------------------------------------------------
 
 options(
-  tinytex.verbose = TRUE,
-  bookdown.render.file_scope = FALSE,
-  scipen = 10,
-  warning.length = 8170
+  tinytex.verbose = TRUE,  # Verbose output to track down warnings
+  scipen = 10,  # Stop scientific notation for p-values
+  warning.length = 8170  # Print lots of warning text for tracing tex warnings
 )
 
+# Set the ggplot theme to something that looks nice
 theme_set(
   theme_light() +
     theme(
@@ -212,7 +212,6 @@ nMaxOutliers <- 2
 zThresh <- 3
 accuracyRange <- c(.6, .85)
 minTrialsPerCategory <- 12
-preRegParticipants <- 50
 
 for (E in dots) {
   tmp <- E$trials %>% 
@@ -246,16 +245,6 @@ for (E in dots) {
     )
   
   do_exclusions(E$exclusions, envir = E)
-  
-  tmp <- E$trials %>% 
-    nest(d = -pid) %>% 
-    rowid_to_column() %>% 
-    filter(rowid > preRegParticipants)
-  
-  E$exclusions <- E$exclusions %>% 
-    mutate(`Too many participants` = pid %in% tmp$pid)
-  
-  do_exclusions(E$exclusions, envir = E, backup = F)
   
   E$exclusions$`Total excluded` <- E$exclusions %>% 
     select(-pid) %>% 

@@ -1,15 +1,62 @@
 \begin{thebibliography}{1}
 
-\bibitem{yanivReceivingOtherPeople2004}
-Yaniv I.
-\newblock Receiving Other People's Advice: Influence and Benefit.
-\newblock Organizational Behavior and Human Decision Processes;93(1):1--13.
-\newblock doi:{10.1016/j.obhdp.2003.08.002}.
+\bibitem{mayerIntegrativeModelOrganizational1995}
+Mayer RC, Davis JH, Schoorman FD.
+\newblock An Integrative Model of Organizational Trust.
+\newblock Academy of management review. 1995;20(3):709--734.
+
+\bibitem{pescetelliRoleDecisionConfidence2021}
+Pescetelli N, Yeung N.
+\newblock The Role of Decision Confidence in Advice-Taking and Trust Formation.
+\newblock Journal of Experimental Psychology: General. 2021;150(3):507--526.
+\newblock doi:{10.1037/xge0000960}.
+
+\bibitem{steinhauserDecisionProcessesHuman2010}
+Steinhauser M, Yeung N.
+\newblock Decision {{Processes}} in {{Human Performance Monitoring}}.
+\newblock Journal of Neuroscience. 2010;30(46):15643--15653.
+\newblock doi:{10.1523/JNEUROSCI.1899-10.2010}.
+
+\bibitem{pescetelliConfidenceAdviceSeeking2021}
+Pescetelli N, Hauperich AK, Yeung N.
+\newblock Confidence, Advice Seeking and Changes of Mind in Decision Making.
+\newblock Cognition. 2021;215:104810.
+\newblock doi:{10.1016/j.cognition.2021.104810}.
+
+\bibitem{rouaultFormingGlobalEstimates2019}
+Rouault M, Dayan P, Fleming SM.
+\newblock Forming Global Estimates of Self-Performance from Local Confidence.
+\newblock Nature Communications. 2019;10(1):1141.
+\newblock doi:{10.1038/s41467-019-09075-3}.
+
+\bibitem{flemingDomainspecificImpairmentMetacognitive2014}
+Fleming SM, Ryu J, Golfinos JG, Blackmon KE.
+\newblock Domain-Specific Impairment in Metacognitive Accuracy Following
+  Anterior Prefrontal Lesions.
+\newblock Brain. 2014;137(10):2811--2822.
+\newblock doi:{10.1093/brain/awu221}.
+
+\bibitem{yanivAdviceTakingDecision2000}
+Yaniv I, Kleinberger E.
+\newblock Advice {{Taking}} in {{Decision Making}}: Egocentric {{Discounting}}
+  and {{Reputation Formation}}.
+\newblock Organizational Behavior and Human Decision Processes.
+  2000;83(2):260--281.
+\newblock doi:{10.1006/obhd.2000.2909}.
 
 \bibitem{yanivUsingAdviceMultiple2007}
 Yaniv I, Milyavsky M.
 \newblock Using Advice from Multiple Sources to Revise and Improve Judgments.
-\newblock Organizational Behavior and Human Decision Processes;103(1):104--120.
+\newblock Organizational Behavior and Human Decision Processes.
+  2007;103(1):104--120.
 \newblock doi:{10.1016/j.obhdp.2006.05.006}.
+
+\bibitem{ginoWeListenAdvice2008}
+Gino F.
+\newblock Do We Listen to Advice Just Because We Paid for It? The Impact of
+  Advice Cost on Its Use.
+\newblock Organizational Behavior and Human Decision Processes.
+  2008;107(2):234--245.
+\newblock doi:{10.1016/j.obhdp.2008.03.001}.
 
 \end{thebibliography}

@@ -2,11 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
-
 *.pdf
-
 *.tex
-
 *.log
-
 *.gz
+figures/*
