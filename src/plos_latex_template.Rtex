@@ -762,6 +762,9 @@ tryCatch(
 \section*{Acknowledgments}
 Cras egestas velit mauris, eu mollis turpis pellentesque sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam id pretium nisi. Sed ac quam id nisi malesuada congue. Sed interdum aliquet augue, at pellentesque quam rhoncus vitae.
 
+\section*{Author contributions}
+MJ: Conceptualization, Data Curation, Formal Analysis, Funding Acquisition, Investigation, Methodology, Project Administration, Resources, Software, Validation, Visualization, Writing – Original Draft. NY: Conceptualization, Funding Acquisition, Methodology, Resources, Supervision, Writing – Review \& Editing.
+
 \nolinenumbers
 
 % Either type in your references using
