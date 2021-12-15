@@ -517,14 +517,16 @@ tts <- d %>%
   nest(d_choice = -c(task, experiment, d, feedback)) %>%
   mutate(
     t = map(d_choice, ~ t.test(.$p, mu = .5) %>% tidy()),
-    m = map(d_choice, ~ mean_cl_normal(.$p))
+    m = map(d_choice, ~ mean_cl_normal(.$p)),
+    d = map_dbl(d_choice, ~ (mean(.$p) - .5) / sd(.$p))
   ) %>%
   unnest(c(t, m)) %>%
   mutate(
     s = glue(
       "$t({parameter}) {n2s(statistic, 3)}$, ",
       "$p {n2s(p.value)}$, ",
-      "$\\mu {n2s(y, 3)}$ $[{round(ymin, 3)}, {round(ymax, 3)}]$ vs $\\mu_0 = 0.500$"
+      "$\\mu {n2s(y, 3)}$ $[{round(ymin, 3)}, {round(ymax, 3)}]$ vs $\\mu_0 = 0.500$, ",
+      "$d {n2s(d, 3)}$"
     )
   )
 
