@@ -1,15 +1,39 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
-\bibitem{mayerIntegrativeModelOrganizational1995}
-Mayer RC, Davis JH, Schoorman FD.
-\newblock An Integrative Model of Organizational Trust.
-\newblock Academy of management review. 1995;20(3):709--734.
+\bibitem{sollStrategiesRevisingJudgment2009}
+Soll JB, Larrick RP.
+\newblock Strategies for Revising Judgment: {{How}} (and How Well) People Use
+  Others' Opinions.
+\newblock Journal of Experimental Psychology: Learning, Memory, and Cognition.
+  2009;35(3):780--805.
+\newblock doi:{10.1037/a0015145}.
+
+\bibitem{sunsteinRepublicCom2002}
+Sunstein CR.
+\newblock Republic.Com.
+\newblock {Princeton University Press}; 2002.
+
+\bibitem{schkadeWhenDeliberationProduces2010}
+Schkade D, Sunstein CR, Hastie R.
+\newblock When Deliberation Produces Extremism.
+\newblock Critical Review. 2010;22(2-3):227--252.
+\newblock doi:{10.1080/08913811.2010.508634}.
 
 \bibitem{pescetelliRoleDecisionConfidence2021}
 Pescetelli N, Yeung N.
 \newblock The Role of Decision Confidence in Advice-Taking and Trust Formation.
 \newblock Journal of Experimental Psychology: General. 2021;150(3):507--526.
 \newblock doi:{10.1037/xge0000960}.
+
+\bibitem{galtonVoxPopuliWisdom1907}
+Galton F.
+\newblock Vox Populi (the Wisdom of Crowds).
+\newblock Nature. 1907;75:450--451.
+
+\bibitem{mayerIntegrativeModelOrganizational1995}
+Mayer RC, Davis JH, Schoorman FD.
+\newblock An Integrative Model of Organizational Trust.
+\newblock Academy of management review. 1995;20(3):709--734.
 
 \bibitem{steinhauserDecisionProcessesHuman2010}
 Steinhauser M, Yeung N.
@@ -38,7 +62,7 @@ Fleming SM, Ryu J, Golfinos JG, Blackmon KE.
 
 \bibitem{yanivAdviceTakingDecision2000}
 Yaniv I, Kleinberger E.
-\newblock Advice {{Taking}} in {{Decision Making}}: Egocentric {{Discounting}}
+\newblock Advice {{Taking}} in {{Decision Making}}: {{Egocentric Discounting}}
   and {{Reputation Formation}}.
 \newblock Organizational Behavior and Human Decision Processes.
   2000;83(2):260--281.
@@ -53,10 +77,45 @@ Yaniv I, Milyavsky M.
 
 \bibitem{ginoWeListenAdvice2008}
 Gino F.
-\newblock Do We Listen to Advice Just Because We Paid for It? The Impact of
+\newblock Do We Listen to Advice Just Because We Paid for It? {{The}} Impact of
   Advice Cost on Its Use.
 \newblock Organizational Behavior and Human Decision Processes.
   2008;107(2):234--245.
 \newblock doi:{10.1016/j.obhdp.2008.03.001}.
+
+\bibitem{jaquieryOxacclabEsmDataThesis2021}
+Jaquiery M. Oxacclab/{{esmData}}: {{Thesis}}; 2021.
+\newblock Zenodo.
+
+\bibitem{rcoreteam2021}
+{R Core Team}. R: {{A}} Language and Environment for Statistical Computing;
+  2021.
+
+\bibitem{rstudioteamRStudioIntegratedDevelopment2021}
+{RStudio Team}. {{RStudio}}: {{Integrated}} Development Environment for r;
+  2021.
+
+\bibitem{xieDynamicDocumentsKnitr2015}
+Xie Y.
+\newblock Dynamic Documents with {{R}} and Knitr.
+\newblock 2nd ed. {Boca Raton, Florida}: {Chapman and Hall/CRC}; 2015.
+
+\bibitem{wickhamWelcomeTidyverse2019}
+Wickham H, Averick M, Bryan J, Chang W, McGowan LD, Fran{\c c}ois R, et~al.
+\newblock Welcome to the Tidyverse.
+\newblock Journal of Open Source Software. 2019;4(43):1686.
+\newblock doi:{10.21105/joss.01686}.
+
+\bibitem{wasonReasoningRule1968}
+Wason PC.
+\newblock Reasoning about a Rule.
+\newblock Quarterly Journal of Experimental Psychology. 1968;20(3):273--281.
+\newblock doi:{10.1080/14640746808400161}.
+
+\bibitem{madsenLargeNetworksRational2018}
+Madsen JK, Bailey RM, Pilditch TD.
+\newblock Large Networks of Rational Agents Form Persistent Echo Chambers.
+\newblock Scientific Reports. 2018;8(1):12391.
+\newblock doi:{10.1038/s41598-018-25558-7}.
 
 \end{thebibliography}

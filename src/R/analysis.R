@@ -155,9 +155,11 @@ order_factors <- function(x) {
 dots <- list(
   acc = new.env(),
   agr = new.env(),
-  ava = new.env(),
-  cca = new.env()
+  ava = new.env()
 )
+
+# Confidence-contingent advice is not included in the main report
+cca <- new.env()
 
 
 # Accuracy
@@ -183,17 +185,17 @@ select_experiment(
 select_experiment(
   project = 'dotstask',
   function(x) filter(x, study == 'MetaCog', version == '2c Fixed'),
-  envir = dots$cca
+  envir = cca
 )
 
 ## Preprocess data --------------------------------------------------------
 
-for (E in dots) {
+for (E in c(dots, cca)) {
   E$trials <- annotate_responses(E$trials)
 }
 
 # Add in nice confidence category for CCA trials
-dots$cca$trials <- dots$cca$trials %>%
+cca$trials <- cca$trials %>%
   mutate(
     Confidence = factor(
       case_when(
@@ -213,7 +215,7 @@ zThresh <- 3
 accuracyRange <- c(.6, .85)
 minTrialsPerCategory <- 12
 
-for (E in dots) {
+for (E in c(dots, cca)) {
   tmp <- E$trials %>% 
     nest(d = -pid) %>%
     mutate(d = map_dbl(d, ~ mean(.$initialAnswerCorrect)))
