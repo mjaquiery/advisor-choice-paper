@@ -435,6 +435,20 @@ These questionnaire responses are not analysed because they were generally uninf
 
 Participants indicated their decisions by entering a combined direction and confidence judgement, selecting the left side of the response scale for leftward decisions and the right side of the response scale for rightward decisions, and indicating confidence by selecting parts of the scale further away from the centre.
 On final decisions, participants could see their initial estimate marked on the response scale.
+An overview of the tasks is shown in Figure~\ref{fig-method}.
+
+\begin{figure}[!ht]
+\caption{{\bf Task structures.}
+Top: Trial sequence for the Dots Task.
+The trial sequence for the other tasks was the same, except that the stimulus remained visible throughout the trial. 
+The phases with dotted outlines were not present on all trials.
+Bottom: Screenshots of the different tasks. 
+Left - Dots Task final decision screen (advice remains visible, alongside the yellow previous decision marker and the white final decision marker).
+Middle - Dates Task final decision screen showing the advice ("Before") and the participant's previous answer (faint shading in the "After" column).
+Right - Continuous Dates Task feedback screen showing the participant's final decision (yellow rectangle), advisor's advice (small advisor marker on the timeline), and feedback marker (yellow star, answer written at the top of the screen).
+}
+\label{fig-method}
+\end{figure}
 
 \subsubsection*{Dots Task}
 
@@ -531,8 +545,10 @@ The accuracy of participants in the Dates Task was not controlled, but was obser
 \end{adjustwidth}
 \end{table}
 
-In the continuous Dates Task, the advisors' advice was determined in a slightly different manner.
-% TODO
+In the continuous Dates Task (high accuracy versus high agreement advisors), the advisors' accuracy and agreement were taken as continuous properties, measured from the centre of the advisor’s marker to the correct year (for accuracy) or the centre of the participant’s initial estimate marker (agreement).
+The high accuracy advisor's advice was drawn from a normal distribution around the correct year, while the high agreement advisor's advice was drawn from a normal distribution around the participant's initial estimate (standard deviation = \Sexpr{dates$ava$AdvisedTrial$advisor0confidenceVariation %>% unique()} years).
+On \Sexpr{bind_rows(dates$ava$AdvisedTrial, dates$ava.pre$AdvisedTrial) %>% transmute(x = advisor0actualType == "disagreeReflected", x = x * 100) %>% pull(x) %>% mean() %>% round(1)}\% of trials, advisors gave advice that was neither correct nor agreeing, by drawing from a normal distribution around a point the opposite side of the correct answer from the initial estimate.
+This was done to provide a subset of trials on which advisor influence might be measured without the confound of the advice itself.
 
 \subsection*{Preregistration}
 
@@ -786,7 +802,7 @@ plt <- ggplot(
 
 tryCatch(
   ggsave(
-    '../figures/results.png', 
+    '../figures/fig-main-result.png', 
     plot = plt,
     width = 750, 
     height = 1000, 
@@ -930,6 +946,8 @@ The results of the Dots Task experiments were consistent with the idea that peop
 Contrary to our expectations, however, when an accurate and agreeing advisor were contrasted, no systematic preferences were observed.
 It is possible that the experiment in which the high accuracy and high agreement advisors were contrasted did not have sufficient resolution to differentiate the advisors in the participants' minds.
 This explanation seems unlikely because the magnitude of the differences along the dimensions of agreement and accuracy is similar to the magnitudes of differences in the other two experiments where effects were observed.
+Another explanation may be that agreeing advice as generated in these experiments provided almost no information (being mostly dependent on the participant's initial estimate rather than the correct answer), and thus a natural correlation between accuracy and agreement was disrupted that might typically have self-reinforcing effects. 
+Indeed, if the confidence-mediated agreement theory of trust updating\cite{pescetelliRoleDecisionConfidence2021} is correct, it is possible participants viewed agreement when they were very un-confident as a source of suspicion.
 It is also possible that the lack of any systematic effect in advisor preference is the result of averaging over two strong but opposed preferences.
 This may be the case: an inspection of the data presented in Figure~\ref{fig-main-result} shows participants' preferences spread quite homogeneously throughout the range of possible values; suggesting some participants did have quite strong preferences for each of the advisors.
 Other explanations of this are also plausible, however: for example if people develop unsystematic preferences for advisors based on arbitrary criteria when there is no task-relevant way of differentiating them.
@@ -946,24 +964,15 @@ The Dates Task is also a much more difficult task, meaning that participants may
 The agreement differences between the advisors in the accuracy experiments, as shown in Table~\ref{advice}, were around 8\% in the Dots Task and 4\% in the Dates Task.
 
 Consistent across tasks was the finding that people preferred to hear from advisors who agreed with them more frequently.
-The consequences of preferentially sampling from sources that are more likely to confirm one's initial opinions are potentially harmful, from making elementary reasoning mistakes\cite{wasonReasoningRule1968} through to creating polarised political environments wherein only likeminded people have a voice.\cite{sunsteinRepublicCom2002}\cite{madsenLargeNetworksRational2018}
-
-\begin{itemize}
-  \item Participants given feedback do what we'd expect.
-  \begin{itemize}
-    \item Agreement doesn't lead to systematic preference.
-    \item Accuracy is preferred over low accuracy and agreement.
-  \end{itemize}
-  \item Participants denied feedback still detect accuracy over long enough exposure (dots task).
-  \item Agreement produces more pronounced effects than accuracy.
-  \item Participants denied feedback don't appear to differentiate between accuracy and agreement (or perhaps they notice both but don't have systematic preferences over which is more appealing).
-  \item We did not find evidence to support the metacognitive account in terms of pick rates.
-\end{itemize}
+The consequences of preferentially sampling from sources that are more likely to confirm one's initial opinions are potentially harmful, from making elementary reasoning mistakes\cite{wasonReasoningRule1968} through to creating polarised political environments wherein only like-minded people have a voice.\cite{sunsteinRepublicCom2002}\cite{madsenLargeNetworksRational2018}
+Indeed, as shown in earlier work from our lab, using agreement as a proxy for accuracy leads to simulated agents forming echo-chambers.\cite{pescetelliRoleDecisionConfidence2021}
+This process is accelerated where agents selectively sample advice.
+In this context, it is somewhat reassuring to observe that in our experiments participants only preferred agreement where the alternative was disagreement: when agreement was contrasted with accuracy participants expressed a wide range of preference strengths and directions.
+This finding that source selection behaviour is less confirmation-seeking than suspected ties in neatly with work in the selective approach and avoidance literature that indicates people show relatively little partisan discrimination in their media consumption,\cite{searsSelectiveExposureInformation1967}\cite{garrettEchoChambersOnline2009}\cite{jangChallengesSelectiveExposure2014}\cite{nelsonMythPartisanSelective2017} and evidence in favour tends to come from more artificial rather than naturalistic designs.\cite{schmuckAvoidingOtherSide2020}
+Potentially, the tendency to prefer agreeing over accurate advice may be a stable trait subject to individual differences, perhaps related concepts such as need for cognition\cite{cacioppoNeedCognition1982} or openness to experience (although recent work on information-seeking and openness does not support this suggestion\cite{jachTestingInformationSeeking2021}).
+Participants took part in only a single experiment in our study, so we are unable to explore the stability of preferences here.
 
 \section*{Conclusions (optional)}
-
-The main findings of this study are that people are able to identify more accurate advisors in the absence of feedback, given a task that is sufficiently easy.
-This ability leads them to seek advice from more accurate advisors where available, although this process breaks down where the agreement and accuracy of advice are uncorrelated (as in many of these experiments).
 
 % CO\textsubscript{2} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque. Quisque augue sem, tincidunt sit amet feugiat eget, ullamcorper sed velit. 
 
