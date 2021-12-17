@@ -103,6 +103,9 @@
 % color can be used to apply background shading to table cells only
 \usepackage[table]{xcolor}
 \definecolor{fgcolor}{rgb}{0,0,0}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
 
 % array package and thick rules for tables
 \usepackage{array}
@@ -126,8 +129,8 @@
 
 
 % Remove comment for double spacing
-%\usepackage{setspace} 
-%\doublespacing
+\usepackage{setspace}
+\doublespacing
 
 % Text layout
 \raggedright
@@ -167,8 +170,9 @@
 
 %% Include all macros below
 
-\newcommand{\lorem}{{\bf LOREM}}
-\newcommand{\ipsum}{{\bf IPSUM}}
+ % Trying to supress "pdfTeX error (font expansion): auto expansion is only possible with scalable fonts." 
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 
 %% for inline R code: if the inline code is not correctly parsed, you will see a message
 \newcommand{\rinline}[1]{SOMETHING WRONG WITH knitr}
@@ -186,27 +190,16 @@
 % Title must be 250 characters or less.
 \begin{flushleft}
 {\Large
-\textbf\newline{Title of submission to PLOS journals} % Please use "sentence case" for title and headings (capitalize only the first word in a title (or heading), the first word in a subtitle (or subheading), and any proper nouns).
+\textbf\newline{Preferences for advisor agreement and accuracy} % Please use "sentence case" for title and headings (capitalize only the first word in a title (or heading), the first word in a subtitle (or subheading), and any proper nouns).
 }
 \newline
 % Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
 \\
-Name1 Surname\textsuperscript{1,2\Yinyang},
-Name2 Surname\textsuperscript{2\Yinyang},
-Name3 Surname\textsuperscript{2,3\textcurrency},
-Name4 Surname\textsuperscript{2},
-Name5 Surname\textsuperscript{2\ddag},
-Name6 Surname\textsuperscript{2\ddag},
-Name7 Surname\textsuperscript{1,2,3*},
-with the Lorem Ipsum Consortium\textsuperscript{\textpilcrow}
+Matt Jaquiery\textsuperscript{1},
+Nicholas Yeung\textsuperscript{1*}
 \\
 \bigskip
-\textbf{1} Affiliation Dept/Program/Center, Institution Name, City, State, Country
-\\
-\textbf{2} Affiliation Dept/Program/Center, Institution Name, City, State, Country
-\\
-\textbf{3} Affiliation Dept/Program/Center, Institution Name, City, State, Country
-\\
+\textbf{1} ACC Lab, Department of Experimental Psychology, University of Oxford, UK
 \bigskip
 
 % Insert additional author notes using the symbols described below. Insert symbol callouts after author names as necessary.
@@ -214,158 +207,797 @@ with the Lorem Ipsum Consortium\textsuperscript{\textpilcrow}
 % Remove or comment out the author notes below if they aren't used.
 %
 % Primary Equal Contribution Note
-\Yinyang These authors contributed equally to this work.
+% \Yinyang These authors contributed equally to this work.
 
 % Additional Equal Contribution Note
 % Also use this double-dagger symbol for special authorship notes, such as senior authorship.
-\ddag These authors also contributed equally to this work.
+% \ddag These authors also contributed equally to this work.
 
 % Current address notes
-\textcurrency Current Address: Dept/Program/Center, Institution Name, City, State, Country % change symbol to "\textcurrency a" if more than one current address note
+% \textcurrency Current Address: Dept/Program/Center, Institution Name, City, State, Country % change symbol to "\textcurrency a" if more than one current address note
 % \textcurrency b Insert second current address 
 % \textcurrency c Insert third current address
 
 % Deceased author note
-\dag Deceased
+% \dag Deceased
 
 % Group/Consortium Author Note
-\textpilcrow Membership list can be found in the Acknowledgments section.
+% \textpilcrow Membership list can be found in the Acknowledgments section.
 
 % Use the asterisk to denote corresponding authorship and provide email address in note below.
-* correspondingauthor@institute.edu
+* nicholas.yeung@psy.ox.ac.uk
+
+<< run analysis code, include=FALSE >>=
+source('R/analysis.R')
+
+d <- Bin %>%
+  mutate(experiment = if_else(experiment == 'ava.pre', 'ava', experiment)) %>%
+  group_by(task, experiment, pid, feedback, Advisor, has_choice) %>%
+  summarise(across(.fns = mean), n = n(), .groups = "drop") %>%
+  nest(d = -c(task, experiment)) %>%
+  mutate(
+    d_choice = map(d, ~ {
+      tmp <- group_by(., pid) %>% 
+        summarise(
+          Advisor, 
+          n, 
+          feedback = any(feedback), 
+          has_choice, 
+          .groups = "drop"
+        ) %>%
+        filter(has_choice) %>%
+        select(pid, Advisor, n, feedback) %>%
+        pivot_wider(names_from = Advisor, values_from = n) %>%
+        mutate(across(-c(pid, feedback), ~ if_else(is.na(.), 0L, .)))
+      x <- tmp
+      names(x) <- c("pid", "feedback", "other", "ref")
+      group_by(x, pid) %>%
+        summarise(
+          p = ref / (ref + other), 
+          refAdvisor = names(tmp)[3],
+          otherAdvisor = names(tmp)[4],
+          feedback = any(feedback),
+          .groups = "drop"
+        )
+    })
+  )
+@
 
 \end{flushleft}
 % Please keep the abstract below 300 words
 \section*{Abstract}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
+Please keep the abstract below 300 words
 
 
 % Please keep the Author Summary between 150 and 200 words
 % Use first person. PLOS ONE authors please skip this step. 
 % Author Summary not valid for PLOS ONE submissions.   
-\section*{Author summary}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id. Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
+% \section*{Author summary}
+% Please keep the Author Summary between 150 and 200 words
+% Use first person. PLOS ONE authors please skip this step. 
+% Author Summary not valid for PLOS ONE submissions. 
 
 \linenumbers
 
 % Use "Eq" instead of "Equation" for equation citations.
 \section*{Introduction}
-Lorem ipsum dolor sit~\cite{yanivReceivingOtherPeople2004} amet, consectetur adipiscing elit. Curabitur eget porta erat. Morbi consectetur est vel gravida pretium. Suspendisse ut dui eu ante cursus gravida non sed sem. Nullam Eq~(\ref{eq:schemeP}) sapien tellus, commodo id velit id, eleifend volutpat quam. Phasellus mauris velit, dapibus finibus elementum vel, pulvinar non tellus. Nunc pellentesque pretium diam, quis maximus dolor faucibus id.~\cite{yanivUsingAdviceMultiple2007} Nunc convallis sodales ante, ut ullamcorper est egestas vitae. Nam sit amet enim ultrices, ultrices elit pulvinar, volutpat risus.
 
-<< block-1 >>=
-set.seed(123)
-x = runif(10)
-sd(x)  # standard deviation
-@
+The world is full of opinions and suggestions and recommendations, from a colleague's helpful pointers on a paragraph to an advertisement's insistence that you would look sexier in a more expensive pair of jeans.
+Because advice is ubiquitous, choosing where to obtain it is a decision with meaningful consequences: advice is optimally useful where it differs from the ideas we already have while still being based on objective and inter-subjective realities.\cite{sollStrategiesRevisingJudgment2009}
+Continually seeking only advice that confirms already-held opinions has been argued to lead to the formation of echo chambers and drive political polarisation.\cite{sunsteinRepublicCom2002}\cite{schkadeWhenDeliberationProduces2010}
 
-Now we know the first element of x is \Sexpr{x[1]}. And we also know
-the 26 letters are \Sexpr{LETTERS}. An expression that returns a
-value of length 0 will be removed from the output, \Sexpr{x[1] =
-  2011; NULL} but it was indeed evaluated, e.g. now the first element
-of x becomes \Sexpr{x[1]}.
+A previous line of work from our lab indicated that the likelihood that people develop greater trust in advisors who agree with them more frequently, although this effect is reduced where feedback is available (and hence advice can be evaluated against an objective standard).\cite{pescetelliRoleDecisionConfidence2021}
+There are good reasons why agreement can be used as a proxy for accuracy when feedback is unavailable. 
+Based on the principle of the 'wisdom of crowds',\cite{galtonVoxPopuliWisdom1907} categorical decisions driven by a shared truth and unshared error will agree more frequently the greater the accuracy of the decisions (because they depend more upon the shared truth which brings them together than the unshared errors which may drive them apart).\cite{sollStrategiesRevisingJudgment2009}
+In the absence of shared bias, agreement can therefore act as an indicator of accuracy: for any better-than-chance decision-maker of fixed ability the agreement rate of an advisor will be proportional to the accuracy of the advisor.
 
-\begin{eqnarray}
-\label{eq:schemeP}
-	\mathrm{P_Y} = \underbrace{H(Y_n) - H(Y_n|\mathbf{V}^{Y}_{n})}_{S_Y} + \underbrace{H(Y_n|\mathbf{V}^{Y}_{n})- H(Y_n|\mathbf{V}^{X,Y}_{n})}_{T_{X\rightarrow Y}},
-\end{eqnarray}
+Here, we investigate whether these same effects extend into the domain of advisor choice.
+Will people prefer to receive advice that is more likely to agree with them that advice that may be less palatable but more useful?
+We report on a series of experiments in which participants learned about a pair of advisors and then given the opportunity to choose between them.
+The advisors were computerised agents whose advice was calculated to predominantly either agree with the participants' choice or identify the correct answer.
+We hypothesised that participants would prefer to receive advice from the advisors who agreed with them more often, and that this effect would disappear when feedback was provided during the learning phase.
+
+% \begin{eqnarray}
+% \label{eq:schemeP}
+% 	\mathrm{P_Y} = \underbrace{H(Y_n) - H(Y_n|\mathbf{V}^{Y}_{n})}_{S_Y} + \underbrace{H(Y_n|\mathbf{V}^{Y}_{n})- H(Y_n|\mathbf{V}^{X,Y}_{n})}_{T_{X\rightarrow Y}},
+% \end{eqnarray}
 
 \section*{Materials and methods}
-\subsection*{Etiam eget sapien nibh}
 
-% For figure citations, please use "Fig" instead of "Figure".
-Nulla mi mi, Fig~\ref{fig1} venenatis sed ipsum varius, volutpat euismod diam. Proin rutrum vel massa non gravida. Quisque tempor sem et dignissim rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at justo vitae nulla elementum commodo eu id massa. In vitae diam ac augue semper tincidunt eu ut eros. Fusce fringilla erat porttitor lectus cursus, \nameref{S1_Video} vel sagittis arcu lobortis. Aliquam in enim semper, aliquam massa id, cursus neque. Praesent faucibus semper libero.
+\subsection*{Ethics}
 
-% Place figure captions after the first paragraph in which they are cited.
-\begin{figure}[!h]
-\caption{{\bf Bold the figure title.}
-Figure caption text here, please use this space for the figure panel descriptions instead of using subfigure commands. A: Lorem ipsum dolor sit amet. B: Consectetur adipiscing elit.}
-\label{fig1}
+Ethical approval for the studies in the thesis was granted by the University of Oxford Medical Sciences Interdivisional Research Ethics Committee (References: R55382/RE001; R55382/RE002).
+
+\subsection*{Participants}
+
+<< calculate total participants, include=FALSE >>=
+
+# Exclusion totals
+
+#' Look through each environment and sum up the exclusions matching f(Reason)
+f <- function(f) {
+  p <- 0
+  for (e in c(dots, dates)) {
+    n <- e$exclusions_summary %>% 
+      filter(f(Reason)) %>% 
+      pull(`Participants excluded`) %>%
+      sum()
+    p <- p + n
+  }
+  p
+}
+
+# Included 
+pp.i <- f(\(x) str_ends(x, "Total remaining"))
+# Excluded
+pp.x <- f(\(x) str_ends(x, "Total excluded"))
+
+
+x.trial_count <- f(\(x) str_starts(x, "Too few"))
+x.no_advice <- f(\(x) str_starts(x, "Insufficient advice-taking"))
+x.translation <- f(\(x) str_starts(x, "Wrong markers"))
+x.bad_advice <- f(\(x) str_starts(x, "Non-numeric"))
+x.acc_oob <- f(\(x) str_starts(x, "Accuracy"))
+x.conf_compressed <- f(\(x) str_ends(x, "confidence categories"))
+
+
+t.dots <- lapply(dots, \(x) {
+  x$participants %>% 
+    transmute(mins = (timeEnd - timeStart)/1000/60) %>%
+    pull(mins)
+}) %>%
+  unlist()
+
+t.dates <- lapply(dates, \(x) {
+  left_join(
+    transmute(x$`study-details`, pid, start = clientTime),
+    transmute(x$`debrief-form`, pid, end = clientTime),
+    by = "pid"
+  ) %>%
+    mutate(mins = (end - start)/1000/60) %>%
+    pull(mins)
+}) %>%
+  unlist()
+
+markers <- dates$ava$Test %>%
+  bind_rows(dates$ava.pre$Test) %>%
+  group_by(responseMarkerWidth) %>%
+  summarise(v = mean(responseMarkerValue)) %>%
+  rename(m = responseMarkerWidth)
+
+@
+
+Before exclusions, we collected data over the internet from \Sexpr{pp.i + pp.x} participants in these experiments. 
+We deliberately did not collect demographic data from participants to avoid data dredging along irrelevant dimensions, so we do not detail their ages, gender identity, location, eyesight, or language ability.
+All participants were at least 18 years of age, confirmed by the requirements for possessing an account on the Prolific platform and by explicit confirmation when giving informed consent.
+Participants were excluded from the Dates Task for:
+having too many trials with data saving issues, or that took too long (N = \Sexpr{x.trial_count});
+and adjusting their after advice on fewer than \Sexpr{minChangeRate * 100}\% of trials (N = \Sexpr{x.no_advice});
+using translation software to translate questions (N = \Sexpr{x.translation}).
+Participants were excluded from the Dots Task for:
+having initial accuracy below \Sexpr{accuracyRange[1] * 100}\% or above \Sexpr{accuracyRange[2] * 100}\% (N = \Sexpr{x.acc_oob});
+and having a confidence distribution that was too compressed or too skewed to generate contingent advice (N = \Sexpr{x.conf_compressed}).
+Overall, \Sexpr{pp.x} participants were excluded (some participants met multiple exclusion criteria).
+Data from \Sexpr{pp.i} participants formed the data set analysed in the results section below.
+
+Participants were recruited to the experiment via the Prolific Academic participant recruitment platform (\url{https://prolific.co}).
+Participants were prevented from taking the experiment if they had participated in one of the other experiments in the thesis, or if they had an overall approval rating on Prolific of less than 95/100.
+After reading the description of the experiment and accepting the work on the recruitment platform, participants took part in the experiment by clicking a link to the website that housed the experiment, hosted on our lab web server.
+Upon landing on the experiment page, participants were directed to the participant information and consent pages.
+After consent was obtained, they were routed to the correct experiment page, and the experiment began.
+After completing the experiment, participants were provided with an alphanumeric code they could submit on Prolific in exchange for payment. 
+Participants were paid approximately £15/hour.
+The Dots Task experiments lasted approximately \Sexpr{round(mean(t.dots))} minutes (minimum = \Sexpr{round(min(t.dots))}; median = \Sexpr{median(round(t.dots))}; maximum = \Sexpr{round(max(t.dots))}) and the Dates Task experiments lasted approximately \Sexpr{round(mean(t.dates))} minutes (minimum = \Sexpr{round(min(t.dates))}; median = \Sexpr{median(round(t.dates))}; maximum = \Sexpr{round(max(t.dates))}).
+Dates Task experiments included attention checks which terminated the study as a consequence for failure; participants excluded in this way are not detailed in the exclusions above.
+
+\subsubsection*{Sample size}
+Participants were recruited to Dots Task experiments in batches until the pre-specified number (50 participants) passed exclusion checks. 
+The number was chosen to provide a reasonably precise characterisation of people's preferences on the task, and give a high power for detecting a small effect (around $d = 0.1$).
+In this manuscript, because the results are qualitatively identical, participants over-recruited for this process are included.
+Participants were recruited to the Dates Task using a stopping rule based on Bayesian analysis of the core hypothesis for the study.
+Data collection ceased when the Bayes factor for a \textit{t}-test of advisor choice rates versus chance was greater than 3 or less than 1/3 for both feedback and no feedback conditions.
+
+\subsection*{Procedure}
+
+<< trial counts, include=FALSE >>=
+tc.dots <- lapply(1:length(dots), \(i) 
+                  mutate(dots[[i]]$trials, E = names(dots)[i])) %>%
+  bind_rows() %>% 
+  group_by(E, block, pid) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
+  summarise(length = length(unique(n)), n = mean(n), .groups = "drop")
+
+tc.dates <- lapply(1:length(dates), \(i) 
+                   bind_rows(
+                     dates[[i]]$AdvisedTrial, 
+                     dates[[i]]$Trial,
+                     dates[[i]]$practiceTrial,
+                     dates[[i]]$practiceAdvisedTrial
+                   ) %>%
+                     mutate(E = names(dates)[i])) %>%
+  bind_rows() %>% 
+  group_by(E, block, pid) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
+  summarise(length = length(unique(n)), n = mean(n), .groups = "drop")
+@
+
+Participants performed one of two tasks: the Dots Task or the Dates Task. 
+Both of these tasks followed the same general Judge-Advisor System structure.
+On each trial, participants made an initial decision on the decision-making task.
+Next, participants received advice. 
+The advice was always computer-generated, although the specifics of the generating procedure varied between experiments to produce advisors with different styles of advice-giving.
+In familiarisation blocks, participants received this advice from one of two advisors, whereas in test blocks the participants could choose which of their two advisors gave the advice on each trial.
+After seeing the advice, participants input a final decision.
+Participants saw feedback each trial indicating whether or not their own final decision was correct only during initial practice questions, unless they were assigned to the feedback condition of the Dates Task, in which case they received feedback on all trials except the final block of advisor choice trials.
+After all trials were completed, debrief questions were presented and feedback provided concerning the participant's performance, including a stable link to the feedback and a payment code.
+The debrief questions included a questionnaire asking participants to rate their advisors' likeability, ability, and benevolence \cite{mayerIntegrativeModelOrganizational1995}, and offering them the opportunity to provide free-text comments on the advisors and the experiment in general.
+These questionnaire responses are not analysed because they were generally uninformative.
+
+Participants indicated their decisions by entering a combined direction and confidence judgement, selecting the left side of the response scale for leftward decisions and the right side of the response scale for rightward decisions, and indicating confidence by selecting parts of the scale further away from the centre.
+On final decisions, participants could see their initial estimate marked on the response scale.
+An overview of the tasks is shown in Figure~\ref{fig-method}.
+
+\begin{figure}[!ht]
+\caption{{\bf Task structures.}
+Top: Trial sequence for the Dots Task.
+The trial sequence for the other tasks was the same, except that the stimulus remained visible throughout the trial. 
+The phases with dotted outlines were not present on all trials.
+Bottom: Screenshots of the different tasks. 
+Left - Dots Task final decision screen (advice remains visible, alongside the yellow previous decision marker and the white final decision marker).
+Middle - Dates Task final decision screen showing the advice ("Before") and the participant's previous answer (faint shading in the "After" column).
+Right - Continuous Dates Task feedback screen showing the participant's final decision (yellow rectangle), advisor's advice (small advisor marker on the timeline), and feedback marker (yellow star, answer written at the top of the screen).
+}
+\label{fig-method}
 \end{figure}
 
-% Results and Discussion can be combined.
-\section*{Results}
-Nulla mi mi, venenatis sed ipsum varius, Table~\ref{table1} volutpat euismod diam. Proin rutrum vel massa non gravida. Quisque tempor sem et dignissim rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at justo vitae nulla elementum commodo eu id massa. In vitae diam ac augue semper tincidunt eu ut eros. Fusce fringilla erat porttitor lectus cursus, vel sagittis arcu lobortis. Aliquam in enim semper, aliquam massa id, cursus neque. Praesent faucibus semper libero.
+\subsubsection*{Dots Task}
 
-% Place tables after the first paragraph in which they are cited.
+The Dots Task allows for precise control over the objective accuracy of a participant's answers, while allowing for a fairly broad range of subjective confidence.
+The Dots Task is the experimental task used in the work we were attempting to extend.\cite{pescetelliRoleDecisionConfidence2021}
+
+The decision-making task in the Dots Task was judging which of two briefly (300ms) and simultaneously presented boxes contained more dots.\cite{steinhauserDecisionProcessesHuman2010}\cite{pescetelliConfidenceAdviceSeeking2021}\cite{rouaultFormingGlobalEstimates2019}\cite{flemingDomainspecificImpairmentMetacognitive2014}
+The dots did not move during the presentation of the stimulus.
+The Dots Task includes a staircasing procedure that varies the difference in the number of dots in each box dynamically using a 2-up 1-down procedure.
+The staircasing procedure results in participants converging on an initial estimate accuracy of around 71\%.
+The number of dots was determined by the difficulty of the trial: the box with the least dots had 200 - the difficulty, while the box with the most had 200 + the difficulty.
+
+The Dots Task started a simple interactive tutorial explaining the task and the response bar, followed by two practice blocks of \Sexpr{tc.dots$n[2]} trials so that participants could get used to the task and the staircasing algorithm could titrate the difficulty appropriately (the staircasing continued during the remainder of the experiment).
+Participants then performed \Sexpr{tc.dots$n[3]} trials with advice to get used to receiving and using advice.
+The main experiment consisted of three blocks: in the first two of these participants were advised by one advisor; and in the final block they were able to choose between their two advisors on each trial.
+Each experimental block contained \Sexpr{tc.dots$n[4]} trials.
+The exception to this rule is that the experiment contrasting high accuracy and high agreement advisors had only \Sexpr{tc.dots %>% filter(E == 'ava', block == 2) %>% .$n} practice advice trials and \Sexpr{tc.dots %>% filter(E == 'ava', block == 5) %>% .$n} choice trials.
+
+\subsubsection*{Dates Task}
+
+The Dates Task is shorter and more engaging than the Dates Task, as well as being more similar to tasks used in previous Judge-Advisor System implementations. \cite{yanivAdviceTakingDecision2000}\cite{yanivUsingAdviceMultiple2007}\cite{ginoWeListenAdvice2008}
+
+The Dates Task used a decision-making task that required participants to identify whether 20th Century events occurred before or after a particular date. 
+In each trial, participants saw a text representation of an event that occurred in a specific year of the 20th Century, for example "Roger Bannister runs the first 4-minute mile", which occurred in 1954; or "US-led coalition expels the Iraqi Army from Kuwait in Operation Desert Storm", which occurred in 1991. 
+The participant also saw a date written below the event, and two bars labelled 'Before' (on the left) and 'After' (on the right). 
+Participants indicated their answers by selecting one of the bars, choosing a point higher up the bar the more confident they were in their choice.
+
+The (categorical) Dates Task started with an interactive tutorial, \Sexpr{tc.dates$n[4] - 2} warm-up questions to give participants a chance to calibrate their confidence, and a tutorial on advice.
+Thereafter the participants performed three blocks of experimental trials. 
+In the first two blocks, participants were advised by a single advisor, and in the final block they were able to choose between those advisors. 
+The familiarisation blocks where advisors were assigned automatically consisted of \Sexpr{round(tc.dates$n[2])} trials, and the test block containing a choice of advisors contained \Sexpr{round(tc.dates$n[3])} trials.
+
+\subsubsection*{Continuous Dates Task}
+
+The continuous Dates Task provides a more open-ended question to participants, more closely modelled on previous Judge-Advisor System work. \cite{yanivAdviceTakingDecision2000}\cite{yanivUsingAdviceMultiple2007}\cite{ginoWeListenAdvice2008}
+The continuous Dates Task does not, however, allow for straightforward categorisation of responses and advice according to dimensions of accuracy and agreement.
+
+Unlike the other tasks, the Dates Task version of the high accuracy versus high agreement used a continuous response rather than a binary decision with confidence.
+Participants saw questions from the same set as in the categorical version of the task, but did not see a date.
+Instead, participants indicated their decision by dragging a marker onto a timeline so that it covered a span of years.
+Participants could choose from markers that were \Sexpr{markers$m[1]}, \Sexpr{markers$m[2]}, and \Sexpr{markers$m[3]} years wide, worth \Sexpr{markers$v[1]}, \Sexpr{markers$v[2]}, and \Sexpr{markers$v[3]} points, respectively.
+Points were scored on trials where the participant's marker covered the year in which the event occurred.
+Points were arbitrary, and unrelated to remuneration, but were included to encourage participants to vary marker size as a function of their confidence in their answer.
+
+The experiment trial structure was identical to that for the categorical Dates Task, with the exception that some of the participants experienced only \Sexpr{round(tc.dates$n[13])} trials in each familiarisation block because the preregistered replication (see below) for this experiment was shortened.
+
+\subsection*{Advice}
+The advice was computer-generated throughout all the experiments.
+The advisors gave advice that depended upon the objective answer and/or the participant's initial estimate. 
+Advice was conceptualised along two dimensions: agreement and accuracy.
+For the categorical tasks, advice was considered as 'agreeing' if the advice endorsed the same option the participant chose as their initial estimate.
+Likewise, advice was considered 'accurate' if the advice endorsed the option that was objectively correct.
+Advisors' agreement with the participant was probabilistic and contingent on the correctness of the participant's initial estimate, producing advice profiles detailed in Table~\ref{advice}.
+
+<< advice calculations, include=FALSE >>=
+
+adv <- tribble(
+  ~task, ~advisor, ~agr.c, ~agr.i,
+  "Dots", "High Accuracy", 80, 20,
+  "Dots", "Low Accuracy", 60, 40,
+  "Dots", "High Agreement", 84, 61,
+  "Dots", "Low Agreement", 66, 17,
+  "Dots", "High Accuracy*", 80, 20,
+  "Dots", "High Agreement*", 80, 80,
+  "Dates", "High Accuracy", 80, 20,
+  "Dates", "Low Accuracy", 59, 41,
+  "Dates", "High Agreement", 90, 65,
+  "Dates", "Low Agreement", 75, 35
+) %>%
+  mutate(
+    pCor = if_else(task == "Dots", 71, 59),
+    agr = (agr.c * pCor + agr.i * (100 - pCor)) / 100,
+    acc = (agr.c * pCor + (100 - agr.i) * (100 - pCor)) / 100,
+    s = glue("{advisor} ({task}) & {agr.c} & {agr.i} & {sprintf('%.2f', agr)} & {sprintf('%.2f', acc)} \\\\ \\hline")
+  )
+
+@
+
 \begin{table}[!ht]
 \begin{adjustwidth}{-2.25in}{0in} % Comment out/remove adjustwidth environment if table fits in text column.
 \centering
-\caption{
-{\bf Table caption Nulla mi mi, venenatis sed ipsum varius, volutpat euismod diam.}}
-\begin{tabular}{|l+l|l|l|l|l|l|l|}
+\caption{{\bf Advice calculations for categorical tasks.}}
+\begin{tabular}{|l|r|r|r|r|}
 \hline
-\multicolumn{4}{|l|}{\bf Heading1} & \multicolumn{4}{|l|}{\bf Heading2}\\ \thickhline
-$cell1 row1$ & cell2 row 1 & cell3 row 1 & cell4 row 1 & cell5 row 1 & cell6 row 1 & cell7 row 1 & cell8 row 1\\ \hline
-$cell1 row2$ & cell2 row 2 & cell3 row 2 & cell4 row 2 & cell5 row 2 & cell6 row 2 & cell7 row 2 & cell8 row 2\\ \hline
-$cell1 row3$ & cell2 row 3 & cell3 row 3 & cell4 row 3 & cell5 row 3 & cell6 row 3 & cell7 row 3 & cell8 row 3\\ \hline
+ & \multicolumn{2}{|c|}{\bf Agreement when participant is} & \multicolumn{2}{|c|}{\bf Overall} \\ \hline
+{\bf Advisor} & {\bf Correct (\%)} & {\bf Incorrect (\%)} & {\bf Agreement (\%)} & {\bf Accuracy (\%)}\\ \thickhline
+\Sexpr{paste0(adv$s, collapse = "\n")}
 \end{tabular}
-\begin{flushleft} Table notes Phasellus venenatis, tortor nec vestibulum mattis, massa tortor interdum felis, nec pellentesque metus tortor nec nisl. Ut ornare mauris tellus, vel dapibus arcu suscipit sed.
+\begin{flushleft} The accuracy of participants in the Dots Task was constrained to 71\% by a staircasing procedure. 
+The accuracy of participants in the Dates Task was not controlled, but was observed to be \Sexpr{round(bind_rows(Familiarisation, Test) %>% pull(responseAnswerSideCorrect) %>% mean(na.rm = T) * 100, 1)}\%. \\
+* These advisors were used in the experiment contrasting high accuracy versus high agreement advisors.
 \end{flushleft}
-\label{table1}
+\label{advice}
 \end{adjustwidth}
 \end{table}
 
+In the continuous Dates Task (high accuracy versus high agreement advisors), the advisors' accuracy and agreement were taken as continuous properties, measured from the centre of the advisor’s marker to the correct year (for accuracy) or the centre of the participant’s initial estimate marker (agreement).
+The high accuracy advisor's advice was drawn from a normal distribution around the correct year, while the high agreement advisor's advice was drawn from a normal distribution around the participant's initial estimate (standard deviation = \Sexpr{dates$ava$AdvisedTrial$advisor0confidenceVariation %>% unique()} years).
+On \Sexpr{bind_rows(dates$ava$AdvisedTrial, dates$ava.pre$AdvisedTrial) %>% transmute(x = advisor0actualType == "disagreeReflected", x = x * 100) %>% pull(x) %>% mean() %>% round(1)}\% of trials, advisors gave advice that was neither correct nor agreeing, by drawing from a normal distribution around a point the opposite side of the correct answer from the initial estimate.
+This was done to provide a subset of trials on which advisor influence might be measured without the confound of the advice itself.
 
-%PLOS does not support heading levels beyond the 3rd (no 4th level headings).
-\subsection*{\lorem\ and \ipsum\ nunc blandit a tortor}
-\subsubsection*{3rd level heading} 
-Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque. Quisque augue sem, tincidunt sit amet feugiat eget, ullamcorper sed velit. Sed non aliquet felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris commodo justo ac dui pretium imperdiet. Sed suscipit iaculis mi at feugiat. 
+\subsection*{Preregistration}
 
-\begin{enumerate}
-	\item{react}
-	\item{diffuse free particles}
-	\item{increment time by dt and go to 1}
-\end{enumerate}
+Each individual experiment was preregistered using the Open Science Framework (\url{https://osf.io/}), with the exception of the Dots Task experiment with high agreement versus low agreement advisors, which was not preregistered due to an oversight.
+The preregistration links are available in Table~\ref{prereg}.
+One additional experiment not reported here, testing a more complex insight derived from \cite{pescetelliRoleDecisionConfidence2021}, is reported in \nameref{confidence-contingent-advice}.
+
+<< prereg table, include=FALSE >>=
+preregs <- lapply(dots, \(x) x$dotstask) %>% 
+  bind_rows() %>% 
+  transmute(task = "Dots Task", study, pr = preregistration) %>% 
+  unique()
+preregs <- lapply(dates, \(x) x$datequiz) %>% 
+  bind_rows() %>% 
+  transmute(task = "Dates Task", study, pr = preregistration) %>%
+  unique() %>% 
+  bind_rows(preregs)
+@
+
+\begin{table}[!ht]
+\begin{adjustwidth}{-2.25in}{0in} % Comment out/remove adjustwidth environment if table fits in text column.
+\centering
+\caption{{\bf Preregistration links for each experiment.}}
+\begin{tabular}{|l|l|l|}
+\hline
+{\bf Advisors} & {\bf Dots Task} & {\bf Dates Task}\\ \thickhline
+High accuracy versus low accuracy & \url{\Sexpr{preregs$pr[5]}} & \url{\Sexpr{preregs$pr[1]}}\\ \hline
+High agreement versus low agreement & \textit{Omitted by oversight} & \url{\Sexpr{preregs$pr[2]}}\\ \hline
+High accuracy versus high agreement & \url{\Sexpr{preregs$pr[7]}} & \url{\Sexpr{preregs$pr[3]}}\\ \hline
+\end{tabular}
+\label{prereg}
+\end{adjustwidth}
+\end{table}
+
+\subsubsection*{Deviations}
+There were several deviations from the preregistered plan for these experiments.
+Firstly, preregistrations for the Dots Task stated that participants beyond the stated sample size of 50 would be dropped.
+In this paper we include the participants who would have been excluded on the basis of this criterion.
+Excluding participants according to the preregistered plan produced the same results.
+Similarly, the Dates Task in which participants chose between high agreement and high accuracy advisors was conducted as two separate studies: a pilot experiment and a preregistered replication. 
+In this paper we combine the data for these two experiments to streamline the reporting process (the results in the experiments when analysed individually are highly similar and qualitatively identical).
+
+The statistical analyses presented in this paper are frequentist one-sample \textit{t}-tests (see below for details).
+For the Dates Task experiments, Bayesian \textit{t}-tests were used to assess whether or not pick rates differed from chance, and data ceased to be collected when sufficient evidence was accumulated to support either the presence or absence of such a difference.
+Frequentist tests are presented here for clarity and consistency, and we note that the results of the frequentist test and the Bayesian equivalents are qualitatively identical.
+
+\section*{Open materials}
+The materials used for running these studies are available for reuse under an MIT license.
+The software is housed in a GitHub repository (\url{https://github.com/oxacclab/ExploringSocialMetacognition}).
+Different experiments took place at different times, while the software was changing.
+Links to the repository state as it was at the time each experiment was run are included in the supporting information (\nameref{gh_links}).
+
+\section*{Open data}
+The data for all analyses below is available in an R package hosted on GitHub.\cite{jaquieryOxacclabEsmDataThesis2021}
+
+\section*{Statistical analysis}
+The results of each study are presented as two-sided one-sample Student's \textit{t}-tests, with alpha set to 0.05.
+No correction is made for multiple comparisons because each test pertains to a specific hypothesis within a discrete experiment.
+All tests are reported with the structure $t(\text{DF}) = \text{X}, p = \text{X}, \mu = \text{X} [\text{X}, \text{X}]$ vs $\mu_0 = \text{X}, d = \text{X}$ where $\text{X}$ stands for the number in question, $\text{DF}$ gives the degrees of freedom of the \textit{t}-test, $p$ the \textit{p}-value, $\mu$ the sample mean with 95\% confidence intervals in square brackets, $\mu_0$ the value to which the sample mean is compared, and $d$ the Cohen's $d$ measure of effect size.
+
+Analysis was conducted in R version \Sexpr{paste0(R.version$major, ".", R.version$minor)},\cite{rcoreteam2021} and the manuscript was prepared in Rstudio (version 1.4.1717)\cite{rstudioteamRStudioIntegratedDevelopment2021} using the \texttt{knitr}\cite{xieDynamicDocumentsKnitr2015} and \texttt{tidyverse}\cite{wickhamWelcomeTidyverse2019} packages.
+A complete list of packages and versions used, and other software environment details, are included in the supporting information (\nameref{env}).
+The analyses can be run using the code provided in the source code repository for this manuscript (\url{https://github.com/oxacclab/advisor-choice-paper}).
+
+<< dump sysinfo, include=FALSE >>=
+write_file(
+  glue(
+    "=== Sys.info() ===\n",
+    paste0(glue("{names(Sys.info())}: {Sys.info()}"), collapse = "\n"),
+    "\n\n=== R version ===\n{R.version.string}",
+    "\n\n=== Package versions ===\n",
+    paste0(
+      sapply(loadedNamespaces(), \(p) 
+             glue("{p} v{paste0(packageVersion(p), collapse = '.')}")),
+      collapse = "\n"
+    )
+  ),
+  "../supporting-information/env.txt"
+)
+@
+
+% Results and Discussion can be combined.
+\section*{Results}
+
+<< descriptives, include=FALSE >>=
+Bin %>% 
+  group_by(task, experiment) %>% 
+  summarise(n = length(unique(pid)))
+@
+
+<< hypotheses, include=FALSE >>=
+
+tts <- d %>%
+  unnest(d_choice) %>% 
+  nest(d_choice = -c(task, experiment, d, feedback)) %>%
+  mutate(
+    t = map(d_choice, ~ t.test(.$p, mu = .5) %>% tidy()),
+    m = map(d_choice, ~ mean_cl_normal(.$p)),
+    d = map_dbl(d_choice, ~ (mean(.$p) - .5) / sd(.$p))
+  ) %>%
+  unnest(c(t, m)) %>%
+  mutate(
+    s = glue(
+      "$t({parameter}) {n2s(statistic, 3)}$, ",
+      "$p {n2s(p.value)}$, ",
+      "$\\mu {n2s(y, 3)}$ $[{round(ymin, 3)}, {round(ymax, 3)}]$ vs $\\mu_0 = 0.500$, ",
+      "$d {n2s(d, 3)}$"
+    )
+  ) %>%
+  arrange(task, experiment, feedback)
+
+# The supporting information needs figures for the confidence-contingent advice
+
+tt.cca <- bind_rows(
+  mutate(cca$test, Trials = "Medium") %>% filter(Confidence == "Medium"),
+  mutate(cca$test, Trials = "All")
+) %>%
+  nest(d = -Trials) %>%
+  mutate(
+    d_choice = map(
+      d, ~ group_by(., pid) %>% 
+        summarise(p = mean(Advisor == "Bias-sharing"), n = n())
+    ),
+    t = map(d_choice, ~ t.test(.$p, mu = .5) %>% tidy()),
+    m = map(d_choice, ~ mean_cl_normal(.$p)),
+    d = map_dbl(d_choice, ~ (mean(.$p) - .5) / sd(.$p))
+  ) %>% 
+  unnest(cols = c(t, m)) %>%
+  mutate(
+    s = glue(
+      "_t_({parameter}) {n2s(statistic, 3)}, ",
+      "_p_ {n2s(p.value)}, ",
+      "mean {n2s(y, 3)} [{round(ymin, 3)}, {round(ymax, 3)}] vs mu = 0.500, ",
+      "_d_ {n2s(d, 3)}"
+    )
+  )
+
+write_file(
+  read_file('confidence-contingent-advice.md') %>%
+    str_replace_all("__Prereg__", cca$dotstask$preregistration %>% unique()) %>%
+    str_replace_all("__All__", tt.cca$s[tt.cca$Trials == "All"]) %>%
+    str_replace_all("__Medium__", tt.cca$s[tt.cca$Trials == "Medium"]),
+  "../supporting-information/confidence-contingent-advice.md"
+) 
+
+@
+
+<< main result graph, include=FALSE >>=
+
+dw <- .8
+z <- 4  # modifier for saving plot in print resolution
 
 
-\subsection*{Sed ac quam id nisi malesuada congue}
+gg <- d %>% 
+  unnest(cols = d_choice) %>%
+  mutate(
+    advisors = glue("{refAdvisor}, {otherAdvisor}"),
+    advisors = factor(advisors),
+    advisors = fct_relevel(advisors, ~ .[c(1, 2, 3)]),
+    experiment = glue("{feedback}_{task}"),
+    experiment = factor(experiment),
+    experiment = fct_relevel(experiment, ~ .[c(3, 1, 2)]),
+    task = glue("{task} task"),
+    feedback = if_else(feedback, "Feedback", "No feedback")
+  ) %>%
+  arrange(experiment)
 
-Nulla mi mi, venenatis sed ipsum varius, volutpat euismod diam. Proin rutrum vel massa non gravida. Quisque tempor sem et dignissim rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at justo vitae nulla elementum commodo eu id massa. In vitae diam ac augue semper tincidunt eu ut eros. Fusce fringilla erat porttitor lectus cursus, vel sagittis arcu lobortis. Aliquam in enim semper, aliquam massa id, cursus neque. Praesent faucibus semper libero.
+gg.axes <- gg %>%
+  mutate(
+    left = str_match(advisors, '(.+), ')[, 2],
+    right = str_match(advisors, ', (.+)')[, 2]
+  ) %>%
+  select(advisors, left, right) %>% 
+  unique()
 
-\begin{itemize}
-	\item First bulleted item.
-	\item Second bulleted item.
-	\item Third bulleted item.
-\end{itemize}
+plt <- ggplot(
+  gg,
+  aes(
+    x = p, 
+    y = advisors, 
+    group = experiment,
+    fill = task
+  )
+) +
+  geom_vline(xintercept = .5, colour = "grey50") +
+  stat_summary(
+    geom = "bar",
+    colour = NA,
+    aes(alpha = feedback),
+    fun = ~ 1,
+    position = position_dodge(width = dw),
+    width = dw - .1
+  ) +
+  geom_point(
+    size = 2 * z,
+    alpha = .1, 
+    position = position_jitterdodge(jitter.width = .1, dodge.width = dw)
+  ) +
+  stat_summary(
+    geom = "point",
+    colour = "black",
+    fill = "black",
+    size = 4 * z,
+    shape = 23,
+    position = position_dodge(width = dw), 
+    fun = mean
+  ) +
+  stat_summary(
+    geom = "errorbar",
+    colour = "black",
+    size = 1 * z,
+    width = 0,
+    position = position_dodge(width = dw),
+    fun.data = mean_cl_normal
+  ) +
+  geom_text(
+    inherit.aes = F,
+    aes(label = left, y = advisors), 
+    size = 4 * z,
+    x = -.1, 
+    hjust = 1,
+    data = gg.axes
+  ) + 
+  geom_text(
+    inherit.aes = F,
+    aes(label = right, y = advisors), 
+    size = 4 * z,
+    x = 1.1,
+    hjust = 0,
+    data = gg.axes
+  ) + 
+  scale_x_continuous(
+    limits = c(-.5, 1.5),
+    breaks = seq(0, 1, .25),
+    labels = c("100%", "75%", "50%", "75%", "100%")
+  ) +
+  scale_alpha_manual(values = c(.2, .5), name = "") +
+  scale_fill_discrete(name = "") +
+  theme(
+    text = element_text(size = 14 * z),
+    panel.grid.major.x = element_line(colour = "grey75"),
+    axis.line = element_blank(),
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.text.x = element_text(colour = "grey50"),
+    axis.ticks = element_blank(),
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    panel.spacing = unit(0, "lines")
+  )
+
+tryCatch(
+  ggsave(
+    '../figures/fig-main-result.png', 
+    plot = plt,
+    width = 750, 
+    height = 1000, 
+    units = "mm", 
+    dpi = 300
+  ),
+  error = \(e) NULL
+)
+
+@
+
+Participants completed on-line tasks in which they were familiarised with two advisors and then allowed to choose between them. 
+We examined three advisor contrasts: an accurate versus an inaccurate advisor; a low versus high agreement advisor; and an accurate versus an agreeing advisor.
+We hypothesised that participants would prefer to receive advice from the advisors who agreed with them more often, and that this effect would disappear when feedback was provided during the learning phase.
+We observed a mixed pattern of results that differed according to the underlying experimental task.
+
+\subsection*{Advisor choice}
+
+Participants frequently had strong individual preferences between advisors. 
+We were interested in whether the relative frequency of choosing advisors differed systematically according to the type of advice the advisor gave.
+For each experiment, we tested whether observed pick rates differed from equivalent rates (50\%).
+As shown in Fig~\ref{fig-main-result}, we observed a mixture of clearly different and approximately equivalent pick rates.
+
+\begin{figure}[!ht]
+\caption{{\bf Advisor choice frequency across all tasks.}
+Experiments were conducted using two tasks, a Dots task (blue bars) and a Dates task (red bars). 
+In the Dates task, some participants received feedback during the familiarisation phase (light shading). 
+Light grey points indicate the relative pick rate of the advisors for a single participant.
+The larger diamonds represent the mean of these individual pick rates, the 95\% confidence intervals of which are represented by the error bars.}
+\label{fig-main-result}
+\end{figure}
+
+In the Dots Task (blue bars in Figure~\ref{fig-main-result}), which did not include feedback, we observed that participants had a systematic preference for receiving advice from advisors who were more as opposed to less accurate (\Sexpr{tts$s[7]}) and more as opposed to less agreeing (\Sexpr{tts$s[8]}).
+Our underlying theory suggests that the reason the more accurate advisors are preferred over the less accurate advisors is that they agree with the participant more frequently.
+If this were the case, we would also expect the agreeing advisor to be preferred to the accurate advisor when directly contrasted: we did not observe this expected effect (\Sexpr{tts$s[9]}).
+
+In the Dates Task (red bars in Figure~\ref{fig-main-result}), when feedback was not provided during learning (solid bars), we only saw systematic preferences emerge in the agreement experiment; for the agreeing advisor (\Sexpr{tts$s[3]}), as expected.
+There was no significant difference between pick rates for the high and low accuracy advisors (\Sexpr{tts$s[1]}): potentially because participants found it difficult to identify which advisor agreed more frequently given their own relatively low accuracies.
+We include a further test of this consideration below.
+Given the clear preference for high agreement advisors and the absence of a clear preference for accurate advisors, we expected to see a clear preference for agreeing advisors over accurate advisors when they were directly contrasted.
+We did not observe this difference (\Sexpr{tts$s[5]}).
+
+In the Dates Task with feedback (faded red bars in Figure~\ref{fig-main-result}), we saw a more consistent pattern of results.
+Participants systematically preferred to receive advice from a more rather than less accurate advisor (\Sexpr{tts$s[2]}), while they did not appear to have a systematic preference for advice that agreed more rather than less (\Sexpr{tts$s[4]}).
+Given the preference for receiving accurate advice and the absence of a preference for agreeing advice, we expected to see a preference for accurate over agreeing advice when they were directly contrasted.
+We did observe this preference: the largest systematic preference across all the experiments (\Sexpr{tts$s[6]}).
+
+\subsection*{Agreement rate as a predictor of choice}
+
+<< pick by agreement, include=FALSE >>=
+
+# Fetch experienced agreement rates in the learning phases
+d.agr <- bind_rows(
+  filter(familiarisation, E == "agr") %>%
+    transmute(
+      pid = paste0("dots_", pid), 
+      Advisor, 
+      advisorAgrees
+    ),
+  filter(Familiarisation, E == "agr") %>%
+    transmute(
+      pid = paste0("dates_", pid), 
+      Advisor, 
+      advisorAgrees = advisor0adviceSide == responseAnswerSide
+    )
+) %>%
+  group_by(pid, Advisor) %>%
+  summarise(agr = mean(advisorAgrees), .groups = "drop") %>%
+  pivot_wider(names_from = Advisor, values_from = agr) %>%
+  transmute(pid, diff = `High agreement` - `Low agreement`) %>%
+  left_join(
+    d %>% filter(experiment == "agr") %>% unnest(d_choice),
+    by = "pid"
+  ) %>%
+  nest(d = -c(task, feedback)) %>%
+  mutate(
+    cor = map(d, ~ cor.test(.$p, .$diff) %>% tidy())
+  ) %>%
+  unnest(cor) %>%
+  mutate(
+    s = glue(
+      "$r {n2s(estimate, 3)}$ [{round(conf.low, 3)}, {round(conf.high, 3)}], ",
+      "$p {n2s(p.value, 4)}$"
+    )
+  ) %>%
+  arrange(task, feedback)
+
+d.acc <- bind_rows(
+  filter(familiarisation, E == "acc") %>%
+    transmute(
+      pid = paste0("dots_", pid), 
+      Advisor, 
+      advisorCorrect = adviceCorrect
+    ),
+  filter(Familiarisation, E == "acc") %>%
+    transmute(
+      pid = paste0("dates_", pid), 
+      Advisor, 
+      advisorCorrect = advisor0adviceSideCorrect
+    )
+) %>%
+  group_by(pid, Advisor) %>%
+  summarise(acc = mean(advisorCorrect), .groups = "drop") %>%
+  pivot_wider(names_from = Advisor, values_from = acc) %>%
+  transmute(pid, diff = `High accuracy` - `Low accuracy`) %>%
+  left_join(
+    d %>% filter(experiment == "acc") %>% unnest(d_choice),
+    by = "pid"
+  ) %>%
+  nest(d = -c(task, feedback)) %>%
+  mutate(
+    cor = map(d, ~ cor.test(.$p, .$diff) %>% tidy())
+  ) %>%
+  unnest(cor) %>%
+  mutate(
+    s = glue(
+      "$r {n2s(estimate, 3)}$ [{round(conf.low, 3)}, {round(conf.high, 3)}], ",
+      "$p {n2s(p.value, 4)}$"
+    )
+  ) %>%
+  arrange(task, feedback)
+@
+
+We hypothesised that participants used agreement as a proxy for assessing accuracy when accuracy information could not be derived from objective feedback.
+We found equivocal evidence for this when looking for systematic preferences for choosing an advisor.
+A more lenient test of our hypothesis is to explore whether observed agreement rate and advisor pick preference are related.
+We found no statistically significant correlation between experienced agreement rate and preference strength in the high versus low agreement experiments, either in the Dots Task (\Sexpr{d.agr$s[3]}) or in the Dates Task without feedback (\Sexpr{d.agr$s[1]}).
+
+This should not be taken as a strong indicator that these features are unrelated, however, because the variation in experienced agreement rates was deliberately minimised, and there were no significant correlations between experienced \textit{accuracy} and pick preference in the high versus low accuracy advisor experiments (Dots Task: \Sexpr{d.acc$s[3]}; Dates Task without feedback: \Sexpr{d.acc$s[1]}).
 
 \section*{Discussion}
-Nulla mi mi, venenatis sed ipsum varius, Table~\ref{table1} volutpat euismod diam. Proin rutrum vel massa non gravida. Quisque tempor sem et dignissim rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at justo vitae nulla elementum commodo eu id massa. In vitae diam ac augue semper tincidunt eu ut eros. Fusce fringilla erat porttitor lectus cursus, vel sagittis arcu lobortis. Aliquam in enim semper, aliquam massa id, cursus neque. Praesent faucibus semper libero~\cite{yonahTheyDonKnow2021}.
 
-\section*{Conclusion}
+Participants performed online experiments in a Judge-Advisor System in which they learned about, and then chose between, advisors who varied in their tendency to agree with initial estimates or provide correct advice.
+We had expected that participants would prefer to receive advice from advisors who were more likely to agree with them (when objective feedback was not provided).
+We observed systematic preferences for accuracy and agreement in the Dots Task, and for agreement alone in the Dates Task. 
+There were no clear preferences when accuracy and agreement were pitted against one another.
+When feedback was provided, participants overwhelmingly preferred accuracy and did not seem to develop a preference for agreement.
 
-CO\textsubscript{2} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque. Quisque augue sem, tincidunt sit amet feugiat eget, ullamcorper sed velit. 
+Our underlying theory, that people use advice agreement as a proxy for accuracy when objective feedback is unavailable, was supported by some of the experimental results.
+The results of the Dots Task experiments were consistent with the idea that people's assessments of accuracy are based on agreement: both agreement and accuracy led to advisors being preferred. 
+Contrary to our expectations, however, when an accurate and agreeing advisor were contrasted, no systematic preferences were observed.
+It is possible that the experiment in which the high accuracy and high agreement advisors were contrasted did not have sufficient resolution to differentiate the advisors in the participants' minds.
+This explanation seems unlikely because the magnitude of the differences along the dimensions of agreement and accuracy is similar to the magnitudes of differences in the other two experiments where effects were observed.
+Another explanation may be that agreeing advice as generated in these experiments provided almost no information (being mostly dependent on the participant's initial estimate rather than the correct answer), and thus a natural correlation between accuracy and agreement was disrupted that might typically have self-reinforcing effects. 
+Indeed, if the confidence-mediated agreement theory of trust updating\cite{pescetelliRoleDecisionConfidence2021} is correct, it is possible participants viewed agreement when they were very un-confident as a source of suspicion.
+It is also possible that the lack of any systematic effect in advisor preference is the result of averaging over two strong but opposed preferences.
+This may be the case: an inspection of the data presented in Figure~\ref{fig-main-result} shows participants' preferences spread quite homogeneously throughout the range of possible values; suggesting some participants did have quite strong preferences for each of the advisors.
+Other explanations of this are also plausible, however: for example if people develop unsystematic preferences for advisors based on arbitrary criteria when there is no task-relevant way of differentiating them.
 
-Sed non aliquet felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris commodo justo ac dui pretium imperdiet. Sed suscipit iaculis mi at feugiat. Ut neque ipsum, luctus id lacus ut, laoreet scelerisque urna. Phasellus venenatis, tortor nec vestibulum mattis, massa tortor interdum felis, nec pellentesque metus tortor nec nisl. Ut ornare mauris tellus, vel dapibus arcu suscipit sed. Nam condimentum sem eget mollis euismod. Nullam dui urna, gravida venenatis dui et, tincidunt sodales ex. Nunc est dui, sodales sed mauris nec, auctor sagittis leo. Aliquam tincidunt, ex in facilisis elementum, libero lectus luctus est, non vulputate nisl augue at dolor. For more information, see \nameref{S1_Appendix}.
+In the Dates Task, participants behaved rationally when they received feedback during the learning phase with which they could objectively assess the value of the advice they received.
+In these experiments, the participants exhibited a systematic preference for more accurate advisors, and were unaffected by advisors' agreement rates (exhibiting a wide range of preference directions and strengths).
+When agreement and accuracy were directly contrasted, accuracy was the clear favourite.
+Conversely, when feedback was unavailable, accuracy was no longer a feature along which participants could differentiate the advisors. 
+Participants did display a preference for agreeing advisors, but only in contrast to low agreement advisors; where accurate and agreeing advisors were contrasted participants once again displayed a wide range of preference directions and strengths.
+
+The two tasks, although very different, produced overall similar results -- the only major qualitative difference was a systematic preference for high over low accuracy in the Dots Task where none was found for the Dates Task.
+It is probable that this difference is a consequence of the structure of the tasks: the Dots Task provides much more exposure to the advisors during learning, and has many more choice trials over which preferences can be assessed.
+The Dates Task is also a much more difficult task, meaning that participants may have been much less able to detect the differences in agreement rates that we suggest underpin accuracy assessments.
+The agreement differences between the advisors in the accuracy experiments, as shown in Table~\ref{advice}, were around 8\% in the Dots Task and 4\% in the Dates Task.
+
+Consistent across tasks was the finding that people preferred to hear from advisors who agreed with them more frequently.
+The consequences of preferentially sampling from sources that are more likely to confirm one's initial opinions are potentially harmful, from making elementary reasoning mistakes\cite{wasonReasoningRule1968} through to creating polarised political environments wherein only like-minded people have a voice.\cite{sunsteinRepublicCom2002}\cite{madsenLargeNetworksRational2018}
+Indeed, as shown in earlier work from our lab, using agreement as a proxy for accuracy leads to simulated agents forming echo-chambers.\cite{pescetelliRoleDecisionConfidence2021}
+This process is accelerated where agents selectively sample advice.
+In this context, it is somewhat reassuring to observe that in our experiments participants only preferred agreement where the alternative was disagreement: when agreement was contrasted with accuracy participants expressed a wide range of preference strengths and directions.
+This finding that source selection behaviour is less confirmation-seeking than suspected ties in neatly with work in the selective approach and avoidance literature that indicates people show relatively little partisan discrimination in their media consumption,\cite{searsSelectiveExposureInformation1967}\cite{garrettEchoChambersOnline2009}\cite{jangChallengesSelectiveExposure2014}\cite{nelsonMythPartisanSelective2017} and evidence in favour tends to come from more artificial rather than naturalistic designs.\cite{schmuckAvoidingOtherSide2020}
+Potentially, the tendency to prefer agreeing over accurate advice may be a stable trait subject to individual differences, perhaps related concepts such as need for cognition\cite{cacioppoNeedCognition1982} or openness to experience (although recent work on information-seeking and openness does not support this suggestion\cite{jachTestingInformationSeeking2021}).
+Participants took part in only a single experiment in our study, so we are unable to explore the stability of preferences here.
+
+\section*{Conclusions (optional)}
+
+% CO\textsubscript{2} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque. Quisque augue sem, tincidunt sit amet feugiat eget, ullamcorper sed velit. 
+
+% Sed non aliquet felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris commodo justo ac dui pretium imperdiet. Sed suscipit iaculis mi at feugiat. Ut neque ipsum, luctus id lacus ut, laoreet scelerisque urna. Phasellus venenatis, tortor nec vestibulum mattis, massa tortor interdum felis, nec pellentesque metus tortor nec nisl. Ut ornare mauris tellus, vel dapibus arcu suscipit sed. Nam condimentum sem eget mollis euismod. Nullam dui urna, gravida venenatis dui et, tincidunt sodales ex. Nunc est dui, sodales sed mauris nec, auctor sagittis leo. Aliquam tincidunt, ex in facilisis elementum, libero lectus luctus est, non vulputate nisl augue at dolor. For more information, see \nameref{S1_Appendix}.
 
 \section*{Supporting information}
 
 % Include only the SI item label in the paragraph heading. Use the \nameref{label} command to cite SI items in the text.
-\paragraph*{S1 Fig.}
-\label{S1_Fig}
-{\bf Bold the title sentence.} Add descriptive text after the title of the item (optional).
-
-\paragraph*{S2 Fig.}
-\label{S2_Fig}
-{\bf Lorem ipsum.} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
-
 \paragraph*{S1 File.}
-\label{S1_File}
-{\bf Lorem ipsum.}  Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
+\label{gh_links}
+{\bf Software code links.} Links to the GitHub repository as it stood at the time each of the experiments covered in the paper was conducted.
 
-\paragraph*{S1 Video.}
-\label{S1_Video}
-{\bf Lorem ipsum.}  Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
+\paragraph*{S2 File.}
+\label{env}
+{\bf Computational environment details.} System information and package version information for the R computing environment used to build this manuscript.
 
-\paragraph*{S1 Appendix.}
-\label{S1_Appendix}
-{\bf Lorem ipsum.} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
-
-\paragraph*{S1 Table.}
-\label{S1_Table}
-{\bf Lorem ipsum.} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque.
+\paragraph*{S3 File.}
+\label{confidence-contingent-advice}
+{\bf Confidence contingent advice.} An additional experiment in this project contrasted advisors with more complex advice profiles. This is a brief report of that experiment.
 
 \section*{Acknowledgments}
 Cras egestas velit mauris, eu mollis turpis pellentesque sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam id pretium nisi. Sed ac quam id nisi malesuada congue. Sed interdum aliquet augue, at pellentesque quam rhoncus vitae.
+
+\section*{Author contributions}
+MJ: Conceptualization, Data Curation, Formal Analysis, Funding Acquisition, Investigation, Methodology, Project Administration, Resources, Software, Validation, Visualization, Writing – Original Draft. NY: Conceptualization, Funding Acquisition, Methodology, Resources, Supervision, Writing – Review \& Editing.
 
 \nolinenumbers
 
