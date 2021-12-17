@@ -13,6 +13,8 @@ library(esmData)    # My own data package holding the data for the project (`rem
 
 ### Configuration -------------------------------------------------------
 
+set.seed(20211217)
+
 options(
   tinytex.verbose = TRUE,  # Verbose output to track down warnings
   scipen = 10,  # Stop scientific notation for p-values
