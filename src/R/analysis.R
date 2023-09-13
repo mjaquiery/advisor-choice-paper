@@ -9,6 +9,7 @@
 library(tidyverse)  # Pipes, tidyselectors, string manipulation, data wrangling, etc.
 library(glue) # Nice string construction
 library(broom) # tidy-style tests
+library(ez) # provides a convenient interface to ANOVA
 library(esmData)    # My own data package holding the data for the project (`remotes::install_github('oxacclab/esmData')`)
 
 ### Configuration -------------------------------------------------------
@@ -145,6 +146,105 @@ order_factors <- function(x) {
       f
   }
   mutate(x, across(.cols = where(is.factor), .f))
+}
+
+
+## Printing stats ------------------------------------------------------------
+
+#' Produce marginal means summaries for a 2x2 ANOVA on long data
+#' @param data tbl to process
+#' @param dv dependent variable
+#' @param wid identifier for cases
+#' @param interaction name for the interaction
+#'
+#' @details Within variables are collapsed first for the interaction, in order
+#'   of their listing, followed by between variables.
+#'   Will process all variables that aren't the DV or the WID.
+#'
+#' @note Will not work where the number of factors exceeds 2
+marginalMeans <- function(
+    data, 
+    dv = names(data)[2], 
+    wid = "pid",
+    interaction = "Difference"
+) {
+  fx <- function(x) str_to_title(x) %>% str_replace_all(" ", "")
+  tmp <- data %>% 
+    ungroup %>%
+    rename(
+      pid = {{wid}},
+      dv = {{dv}}
+    )
+  vars <- select(tmp, c(-pid, -dv)) %>% names()
+  out <- list()
+  # factors
+  for (v in vars) {
+    out[[v]] <- tmp %>% group_by(pid, across(all_of(v))) %>%
+      summarise(dv = mean(dv), .groups = "drop") %>%
+      group_by(across(all_of(v))) %>%
+      summarise(
+        s = glue("M~{fx(.data[[v]])}~ = {sprintf('%.02f', mean(dv))}"),
+        .groups = "drop"
+      ) %>%
+      unique()
+  }
+  if (length(vars) == 2) {
+    # interaction
+    tmp <- tmp %>%
+      group_by(pid, across(all_of(vars))) %>%
+      summarise(dv = mean(dv), .groups = "drop") %>%
+      pivot_wider(names_from = vars[1], values_from = dv) 
+    
+    out$.interactionExpression <- glue("{names(tmp)[3]} - {names(tmp)[length(names(tmp))]}")
+    
+    out$interaction <- tmp %>%
+      mutate(dv = .[[3]] - .[[4]]) %>%
+      group_by(across(all_of(vars[2]))) %>%
+      summarise(
+        s = glue("M~{fx(interaction)}|{fx(.data[[vars[2]]])}~ = {sprintf('%.02f', mean(dv))}"),
+        .groups = "drop"
+      ) %>%
+      unique()
+  }
+  out
+}
+
+p2str <- function(p) {
+  s <- sprintf("%.03f", p)
+  if (s == '0' || str_detect(s, '-?0\\.0+$'))
+    return("< .001")
+  s <- str_replace(s, '0\\.', '.')
+  return(glue(" = {s}"))
+}
+
+#' Produce a summary for an ANOVA and marginal means set
+#' @param ANOVA ANOVA object from an ezANOVA call
+#' @param mMeans marginal means list from a marginalMeans call
+summariseANOVA <- function(ANOVA, mMeans) {
+  slug <- function(s) str_replace_all(str_to_lower(s), " ", "")
+  if (class(ANOVA) == "list" && has_name(ANOVA, "ANOVA"))
+    ANOVA <- ANOVA$ANOVA
+  mm <- mMeans[lapply(mMeans, is_tibble) == T]
+  mm <- lapply(1:length(mm), \(i) {
+    tibble(
+      Effect = slug(names(mm)[i]),
+      mm = mm[[i]] %>% pull(s) %>% paste(collapse = ", ")
+    )
+  }) %>% 
+    bind_rows()
+  ANOVA %>%
+    mutate(Effect = if_else(str_detect(Effect, ":"), "interaction", Effect)) %>%
+    nest(d = -Effect) %>%
+    mutate(
+      aov = map_chr(
+        d, 
+        ~ glue("F({.$DFn},{.$DFd}) = {sprintf('%.02f', .$F)}, _p_{p2str(.$p)}")
+      ),
+      Effect = slug(Effect)
+    ) %>%
+    unnest(d) %>%
+    left_join(mm, by = "Effect") %>%
+    mutate(s = paste(aov, mm, sep = "; "))
 }
 
 
