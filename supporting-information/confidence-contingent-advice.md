@@ -31,7 +31,7 @@ For trials where the participant's initial estimate is correct, the advisors' ag
 ## Hypothesis testing
 
 We expected that participants would develop a systematic preference for the advisor who agreed with them when they were more confident (bias-sharing advisor). 
-We did not see this effect _t_(49) = -1.524, _p_ = 0.1338, mean = 0.472 [0.435, 0.509] vs mu = 0.500, _d_ = -0.216.
+We did not see this effect $t(49) = -1.524$, $p = 0.1338$, $mu = 0.472$ $[0.435, 0.509]$ vs $mu_0 = 0.500$, $d = -0.216$.
 
 The advisors differed in agreement rates dependent upon confidence, so we also examined whether participants preferred the bias-sharing advisor _when their initial estimates were medium confidence_. 
-Again, we did not see a systematic difference in pick rates _t_(49) = -0.908, _p_ = 0.3681, mean = 0.478 [0.429, 0.527] vs mu = 0.500, _d_ = -0.128.
+Again, we did not see a systematic difference in pick rates $t(49) = -0.908$, $p = 0.3681$, $mu = 0.478$ $[0.429, 0.527]$ vs $mu_0 = 0.500$, $d = -0.128$.

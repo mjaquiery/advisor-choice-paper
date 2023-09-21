@@ -1,0 +1,53 @@
+This is BibTeX, Version 0.99d (TeX Live 2021/W32TeX)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: plos_latex_template.aux
+The style file: plos2015.bst
+Database file #1: refs.bib
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Warning--missing publisher in rcoreteam2021
+Warning--missing publisher in rstudioteamRStudioIntegratedDevelopment2021
+You've used 43 entries,
+            3058 wiz_defined-function locations,
+            983 strings with 14302 characters,
+and the built_in function-call counts, 70447 in all, are:
+= -- 9208
+> -- 441
+< -- 1
++ -- 273
+- -- 110
+* -- 5831
+:= -- 7689
+add.period$ -- 207
+call.type$ -- 43
+change.case$ -- 2
+chr.to.int$ -- 3
+cite$ -- 45
+duplicate$ -- 6355
+empty$ -- 6649
+format.name$ -- 142
+if$ -- 16517
+int.to.chr$ -- 0
+int.to.str$ -- 43
+missing$ -- 359
+newline$ -- 257
+num.names$ -- 43
+pop$ -- 538
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 586
+stack$ -- 0
+substring$ -- 13215
+swap$ -- 939
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 2
+while$ -- 354
+width$ -- 45
+write$ -- 549
+(There were 2 warnings)

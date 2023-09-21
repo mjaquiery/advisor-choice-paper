@@ -184,7 +184,7 @@ marginalMeans <- function(
       summarise(dv = mean(dv), .groups = "drop") %>%
       group_by(across(all_of(v))) %>%
       summarise(
-        s = glue("M~{fx(.data[[v]])}~ = {sprintf('%.02f', mean(dv))}"),
+        s = glue("$M_{{{fx(.data[[v]])}}} = {sprintf('%.02f', mean(dv))}$"),
         .groups = "drop"
       ) %>%
       unique()
@@ -202,7 +202,7 @@ marginalMeans <- function(
       mutate(dv = .[[3]] - .[[4]]) %>%
       group_by(across(all_of(vars[2]))) %>%
       summarise(
-        s = glue("M~{fx(interaction)}|{fx(.data[[vars[2]]])}~ = {sprintf('%.02f', mean(dv))}"),
+        s = glue("$M_{{{fx(interaction)}|{fx(.data[[vars[2]]])}}} = {sprintf('%.02f', mean(dv))}$"),
         .groups = "drop"
       ) %>%
       unique()
@@ -213,7 +213,7 @@ marginalMeans <- function(
 p2str <- function(p) {
   s <- sprintf("%.03f", p)
   if (s == '0' || str_detect(s, '-?0\\.0+$'))
-    return("< .001")
+    return(" < .001")
   s <- str_replace(s, '0\\.', '.')
   return(glue(" = {s}"))
 }
@@ -239,7 +239,7 @@ summariseANOVA <- function(ANOVA, mMeans) {
     mutate(
       aov = map_chr(
         d, 
-        ~ glue("F({.$DFn},{.$DFd}) = {sprintf('%.02f', .$F)}, _p_{p2str(.$p)}")
+        ~ glue("$F({.$DFn},{.$DFd}) = {sprintf('%.02f', .$F)}$, $p{p2str(.$p)}$")
       ),
       Effect = slug(Effect)
     ) %>%
