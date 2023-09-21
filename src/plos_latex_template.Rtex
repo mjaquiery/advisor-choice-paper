@@ -116,10 +116,10 @@
 % create \thickcline for thick horizontal lines of variable length
 \newlength\savedwidth
 \newcommand\thickcline[1]{%
-  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
-  \cline{#1}%
-  \noalign{\vskip\arrayrulewidth}%
-  \noalign{\global\arrayrulewidth\savedwidth}%
+\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+\cline{#1}%
+\noalign{\vskip\arrayrulewidth}%
+\noalign{\global\arrayrulewidth\savedwidth}%
 }
 
 % \thickhline command for thick horizontal lines that span the table
@@ -170,7 +170,7 @@
 
 %% Include all macros below
 
- % Trying to supress "pdfTeX error (font expansion): auto expansion is only possible with scalable fonts." 
+% Trying to supress "pdfTeX error (font expansion): auto expansion is only possible with scalable fonts." 
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 
@@ -573,7 +573,7 @@ Participants' accuracy in the Dates Task was less well controlled because it dep
 \caption{{\bf Advice calculations for categorical tasks.}}
 \begin{tabular}{|l|r|r|r|r|}
 \hline
- & \multicolumn{2}{|c|}{\bf Agreement when participant is} & \multicolumn{2}{|c|}{\bf Overall} \\ \hline
+& \multicolumn{2}{|c|}{\bf Agreement when participant is} & \multicolumn{2}{|c|}{\bf Overall} \\ \hline
 {\bf Advisor} & {\bf Correct (\%)} & {\bf Incorrect (\%)} & {\bf Accuracy (\%)} & {\bf Agreement (\%)}\\ \thickhline
 \Sexpr{paste0(adv$s, collapse = "\n")}
 \end{tabular}
@@ -722,7 +722,7 @@ aov_conf_dots <- familiarisation %>%
     })
   ) %>%
   unnest(summary)
-  
+
 aov_conf_dates_cat <- Familiarisation %>% 
   filter(is.na(responseMarkerWidth)) %>%
   nest(summary=-E) %>%
@@ -891,7 +891,7 @@ tts <- d %>%
   mutate(
     s = glue(
       "$t({parameter}) {n2s(statistic, 3)}$, ",
-      "$p {n2s(p.value)}$, ",
+      "$p {n2s(p.value, limit = 0.001)}$, ",
       "$\\mu {n2s(y, 3)}$ $[{round(ymin, 3)}, {round(ymax, 3)}]$ vs $\\mu_0 = 0.500$, ",
       "$d {n2s(d, 3)}$"
     )
@@ -918,7 +918,7 @@ tt.cca <- bind_rows(
   mutate(
     s = glue(
       "_t_({parameter}) {n2s(statistic, 3)}, ",
-      "_p_ {n2s(p.value)}, ",
+      "_p_ {n2s(p.value, limit = 0.001)}, ",
       "mean {n2s(y, 3)} [{round(ymin, 3)}, {round(ymax, 3)}] vs mu = 0.500, ",
       "_d_ {n2s(d, 3)}"
     )
@@ -934,6 +934,40 @@ write_file(
 
 @
 
+
+<< compare experiments, include=FALSE >>=
+
+by_feedback <- d %>%
+  unnest(d_choice) %>% 
+  filter(task == 'Dates') %>%
+  nest(d_choice = -c(experiment, d)) %>%
+  mutate(
+    t = map(d_choice, ~ t.test(p ~ feedback, .) %>% tidy()),
+    m_feedback = map(d_choice, ~ mean_cl_normal(filter(., feedback)$p)),
+    m_no_feedback = map(d_choice, ~ mean_cl_normal(filter(., !feedback)$p)),
+    m_no_feedback = map(m_no_feedback, ~ rename_with(., ~ paste0(., "_nf"))),
+    d = map_dbl(d_choice, function(x) {
+      abs(
+        (mean(x %>% filter(feedback) %>% pull(p)) - 
+           mean(x %>% filter(!feedback) %>% pull(p))) / 
+          sd(x$p)
+      )
+    })
+  ) %>%
+  unnest(c(t, m_feedback, m_no_feedback)) %>%
+  mutate(
+    s = glue(
+      "$t({round(parameter, 2)}) {n2s(statistic, 3)}$, ",
+      "$p {n2s(p.value, limit = 0.001)}$, ",
+      "$M~feedback~ {n2s(y, 3)}$ $[{round(ymin, 3)}, {round(ymax, 3)}]$, ",
+      "$M~no feedback~ {n2s(y_nf, 3)}$ $[{round(ymin_nf, 3)}, {round(ymax_nf, 3)}]$, ",
+      "$|d| {n2s(d, 3)}$"
+    )
+  ) %>%
+  arrange(experiment)
+
+@
+
 << main result graph, include=FALSE >>=
 
 dw <- .8
@@ -945,7 +979,7 @@ gg <- d %>%
   mutate(
     advisors = glue("{refAdvisor}, {otherAdvisor}"),
     advisors = factor(advisors),
-    advisors = fct_relevel(advisors, ~ .[c(1, 2, 3)]),
+    advisors = fct_relevel(advisors, ~ .[c(1, 3, 2)]),
     experiment = glue("{feedback}_{task}"),
     experiment = factor(experiment),
     experiment = fct_relevel(experiment, ~ .[c(3, 1, 2)]),
@@ -1092,24 +1126,35 @@ As shown in Fig~\ref{fig-main-result}, we observed a mixture of clearly differen
 Experiments were conducted using two tasks, a Dots task (blue bars) and a Dates task (red bars). 
 In the Dates task, some participants received feedback during the familiarisation phase (light shading). 
 Light grey points indicate the relative pick rate of the advisors for a single participant.
-The larger diamonds represent the mean of these individual pick rates, the 95\% confidence intervals of which are represented by the error bars.}
+The larger diamonds represent the mean of these individual pick rates, the 95\% confidence intervals of which are represented by the error bars. Participants in the Dots Task performed 60 choice trials, while those in Dates Tasks performed 10, so Dots Task choice ratios are more granular.}
 \label{fig-main-result}
 \end{figure}
 
-In the Dots Task (blue bars in Figure~\ref{fig-main-result}), which did not include feedback, we observed that participants had a systematic preference for receiving advice from advisors who were more as opposed to less accurate (\Sexpr{tts$s[7]}) and more as opposed to less agreeing (\Sexpr{tts$s[8]}).
-Our underlying theory suggests that the reason the more accurate advisors are preferred over the less accurate advisors is that they agree with the participant more frequently.
-If this were the case, we would also expect the agreeing advisor to be preferred to the accurate advisor when directly contrasted: we did not observe this expected effect (\Sexpr{tts$s[9]}).
+In the first series of experiments, participants chose between advisors who differed in objective accuracy. 
+In the Dots Task (Experiment 1A), which did not include feedback, we observed that participants had a systematic preference for receiving advice from advisors who were more as opposed to less accurate (\Sexpr{tts$s[7]}).
+There was wide variability of the strength of this preference, with most participants showing only a slight bias towards the more accurate advisor, but with a minority showing a strong preference. 
+These findings conceptually replicate and our earlier findings on advice utilisation \cite{pescetelliRoleDecisionConfidence2021}, showing again that people are able to learn the quality of advice even in the absence of an objective standard, and extend these results to show that this learning also guides their choice of advice source. 
+However, contrary to expectation, a corresponding preference was not apparent in the Dates Task when feedback was absent during learning (Experiment 1B, \Sexpr{tts$s[1]}). 
+Here, preferences were quite evenly distributed across the full range of directions and strengths, with a slight numerical advantage for the Low accuracy advisor. 
+The lack of consistent preference potentially indicates that participants found it difficult to identify distinguish advisors given their own relatively low accuracies and given relatively few familiarisation trials (15 per advisor, versus 60 in the Dots task). 
+In contrast, the Dates Task with feedback (Experiment 1C) showed a more consistent pattern, with participants systematically preferring to receive advice from a more rather than less accurate advisor (\Sexpr{tts$s[2]}). 
+The between-experiment comparison of Experiments 1B and 1C was significant (\Sexpr{by_feedback$s[1]}).
 
-In the Dates Task (red bars in Figure~\ref{fig-main-result}), when feedback was not provided during learning (solid bars), we only saw systematic preferences emerge in the agreement experiment; for the agreeing advisor (\Sexpr{tts$s[3]}), as expected.
-There was no significant difference between pick rates for the high and low accuracy advisors (\Sexpr{tts$s[1]}): potentially because participants found it difficult to identify which advisor agreed more frequently given their own relatively low accuracies.
-We include a further test of this consideration below.
-Given the clear preference for high agreement advisors and the absence of a clear preference for accurate advisors, we expected to see a clear preference for agreeing advisors over accurate advisors when they were directly contrasted.
-We did not observe this difference (\Sexpr{tts$s[5]}).
+The second series of experiments focused on the effect of advisor agreement. 
+In the Dots task (Experiment 2A), participants had a systematic preference for receiving advice from advisors who were more as opposed to less agreeing (\Sexpr{tts$s[8]}). 
+As with the accuracy preference in this task, the pattern across participants was of a majority showing only a small preference and a sizeable minority showing stronger preferences. 
+In the Dates Task, when feedback was not provided during learning (Experiment 2B), we saw systematic preferences emerge that favoured the agreeing advisor (\Sexpr{tts$s[3]}), as expected. 
+In contrast to the Dots Task version, some Dates Task participants chose the low agreement advisor on the majority of test trials, but the average preference was numerically larger in the Dates Task overall. 
+In the Dates Task with feedback (Experiment 2C), participants did not appear to have a systematic preference for advice that agreed more rather than less (\Sexpr{tts$s[4]}), with the full range of preferences—ranging from always selecting the low agreement advisor to always selecting the high agreement advisor—seen across participants. 
+Collectively, these findings are consistent with our key predictions that participants will exhibit a preference for advisors who have previously tended to agree with a participant’s own initial decisions, but that this tendency will be reduced or even absent if feedback is provided. 
+However, the between-experiment comparison of Experiments 2B and 2C was not significant (\Sexpr{by_feedback$s[2]}), reflecting the high degree of inter-individual variability in preferences apparent in both experiments.
 
-In the Dates Task with feedback (faded red bars in Figure~\ref{fig-main-result}), we saw a more consistent pattern of results.
-Participants systematically preferred to receive advice from a more rather than less accurate advisor (\Sexpr{tts$s[2]}), while they did not appear to have a systematic preference for advice that agreed more rather than less (\Sexpr{tts$s[4]}).
-Given the preference for receiving accurate advice and the absence of a preference for agreeing advice, we expected to see a preference for accurate over agreeing advice when they were directly contrasted.
-We did observe this preference: the largest systematic preference across all the experiments (\Sexpr{tts$s[6]}).
+Our underlying theory suggests that the participants learn to trust accurate advisors over less accurate advisors when feedback is absent because the accurate advisors agree with them more frequently.
+If this were the case, we might also expect an agreeing advisor to be preferred to an accurate advisor when directly contrasted. 
+However, we did not observe this expected effect in our final series of experiments, either with the Dots Task (Experiment 3A: \Sexpr{tts$s[9]}) or the Dates Task (Experiment 3B: \Sexpr{tts$s[5]}).
+The full range of idiosyncratic advisor preferences was apparent in both datasets, with some participants choosing the high accuracy advisor on all trials, some choosing the high agreement advisor on all trials, and gradations in between—averaging to no consistent preference overall. 
+In contrast, when feedback was provided in the Dates Task (Experiment 3C), a strong preference for the high accuracy advisor was apparent (\Sexpr{tts$s[6]}), the largest systematic preference across all the experiments. 
+The between-experiment comparison of Experiments 3B and 3C was reliable (\Sexpr{by_feedback$s[3]}).
 
 \subsection*{Agreement rate as a predictor of choice}
 
@@ -1196,35 +1241,32 @@ This should not be taken as a strong indicator that these features are unrelated
 
 \section*{Discussion}
 
-Participants performed online experiments in a Judge-Advisor System in which they learned about, and then chose between, advisors who varied in their tendency to agree with initial estimates or provide correct advice.
-We had expected that participants would prefer to receive advice from advisors who were more likely to agree with them (when objective feedback was not provided).
-We observed systematic preferences for accuracy and agreement in the Dots Task, and for agreement alone in the Dates Task. 
+Participants performed online experiments in a Judge-Advisor System in which they learned about, and then chose between, advisors who varied in their tendency to agree with their initial estimates or to provide correct advice.
+We had expected that participants would prefer to receive advice from advisors who were more likely to agree with them when they lacked objective feedback against which to evaluate the quality of advice.
+Consistent with this, we observed systematic preferences for accuracy and agreement in the Dots Task, and for agreement alone in the Dates Task. 
 There were no clear preferences when accuracy and agreement were pitted against one another.
 When feedback was provided, participants overwhelmingly preferred accuracy and did not seem to develop a preference for agreement.
 
 Our underlying theory, that people use advice agreement as a proxy for accuracy when objective feedback is unavailable, was supported by some of the experimental results.
 The results of the Dots Task experiments were consistent with the idea that people's assessments of accuracy are based on agreement: both agreement and accuracy led to advisors being preferred. 
+In this way, our findings replicate previous observations that people are able to discern the quality of advice they receive even when feedback is absent, \cite{Carlebach_Yeung_2023}\cite{yanivAdviceTakingDecision2000} and tend to over-trust advisors who agree with them more frequently, \cite{pescetelliRoleDecisionConfidence2021} and extend these findings to show the impact of this trust extends to their choice of advisors.  
+
 Contrary to our expectations, however, when an accurate and agreeing advisor were contrasted, no systematic preferences were observed.
-It is possible that the experiment in which the high accuracy and high agreement advisors were contrasted did not have sufficient resolution to differentiate the advisors in the participants' minds.
+It is possible that the experiments in which the high accuracy and high agreement advisors were contrasted did not have sufficient resolution to differentiate the advisors in the participants' minds.
 This explanation seems unlikely because the magnitude of the differences along the dimensions of agreement and accuracy is similar to the magnitudes of differences in the other two experiments where effects were observed.
 Another explanation may be that agreeing advice as generated in these experiments provided almost no information (being mostly dependent on the participant's initial estimate rather than the correct answer), and thus a natural correlation between accuracy and agreement was disrupted that might typically have self-reinforcing effects. 
 Indeed, if the confidence-mediated agreement theory of trust updating\cite{pescetelliRoleDecisionConfidence2021} is correct, it is possible participants viewed agreement when they were very un-confident as a source of suspicion.
 It is also possible that the lack of any systematic effect in advisor preference is the result of averaging over two strong but opposed preferences.
-This may be the case: an inspection of the data presented in Figure~\ref{fig-main-result} shows participants' preferences spread quite homogeneously throughout the range of possible values; suggesting some participants did have quite strong preferences for each of the advisors.
-Other explanations of this are also plausible, however: for example if people develop unsystematic preferences for advisors based on arbitrary criteria when there is no task-relevant way of differentiating them.
-
-In the Dates Task, participants behaved rationally when they received feedback during the learning phase with which they could objectively assess the value of the advice they received.
-In these experiments, the participants exhibited a systematic preference for more accurate advisors, and were unaffected by advisors' agreement rates (exhibiting a wide range of preference directions and strengths).
-When agreement and accuracy were directly contrasted, accuracy was the clear favourite.
-Conversely, when feedback was unavailable, accuracy was no longer a feature along which participants could differentiate the advisors. 
-Participants did display a preference for agreeing advisors, but only in contrast to low agreement advisors; where accurate and agreeing advisors were contrasted participants once again displayed a wide range of preference directions and strengths.
+This may be the case: an inspection of the data presented in Figure~\ref{fig-main-result} shows individual participants' preferences spread quite homogeneously throughout the range of possible values; suggesting some participants did have quite strong preferences for each of the advisors.
+This pattern is particularly notable in the Dots Task, and, given that the other experiments with this task tended to show significant clustering around balanced choices of advisors, suggests that deviations from balanced choices are indicative of real preferences.
+Nevertheless, it remains possible that people develop unsystematic preferences for advisors based on arbitrary criteria when there is no task-relevant way of differentiating them.
 
 The two tasks, although very different, produced overall similar results -- the only major qualitative difference was a systematic preference for high over low accuracy in the Dots Task where none was found for the Dates Task.
 It is probable that this difference is a consequence of the structure of the tasks: the Dots Task provides much more exposure to the advisors during learning, and has many more choice trials over which preferences can be assessed.
 The Dates Task is also a much more difficult task, meaning that participants may have been much less able to detect the differences in agreement rates that we suggest underpin accuracy assessments.
 The agreement differences between the advisors in the accuracy experiments, as shown in Table~\ref{advice}, were around 8\% in the Dots Task and 4\% in the Dates Task.
 
-Consistent across tasks was the finding that people preferred to hear from advisors who agreed with them more frequently.
+Consistent across tasks was the finding that, when feedback is absent, people preferred to hear from advisors who agreed with them more frequently.
 The consequences of preferentially sampling from sources that are more likely to confirm one's initial opinions are potentially harmful, from making elementary reasoning mistakes\cite{wasonReasoningRule1968} through to creating polarised political environments wherein only like-minded people have a voice.\cite{sunsteinRepublicCom2002}\cite{madsenLargeNetworksRational2018}
 Indeed, as shown in earlier work from our lab, using agreement as a proxy for accuracy leads to simulated agents forming echo-chambers.\cite{pescetelliRoleDecisionConfidence2021}
 This process is accelerated where agents selectively sample advice.
@@ -1233,11 +1275,13 @@ This finding that source selection behaviour is less confirmation-seeking than s
 Potentially, the tendency to prefer agreeing over accurate advice may be a stable trait subject to individual differences, perhaps related concepts such as need for cognition\cite{cacioppoNeedCognition1982} or openness to experience (although recent work on information-seeking and openness does not support this suggestion\cite{jachTestingInformationSeeking2021}).
 Participants took part in only a single experiment in our study, so we are unable to explore the stability of preferences here.
 
-\section*{Conclusions (optional)}
+\section*{Conclusions}
 
-% CO\textsubscript{2} Maecenas convallis mauris sit amet sem ultrices gravida. Etiam eget sapien nibh. Sed ac ipsum eget enim egestas ullamcorper nec euismod ligula. Curabitur fringilla pulvinar lectus consectetur pellentesque. Quisque augue sem, tincidunt sit amet feugiat eget, ullamcorper sed velit. 
-
-% Sed non aliquet felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris commodo justo ac dui pretium imperdiet. Sed suscipit iaculis mi at feugiat. Ut neque ipsum, luctus id lacus ut, laoreet scelerisque urna. Phasellus venenatis, tortor nec vestibulum mattis, massa tortor interdum felis, nec pellentesque metus tortor nec nisl. Ut ornare mauris tellus, vel dapibus arcu suscipit sed. Nam condimentum sem eget mollis euismod. Nullam dui urna, gravida venenatis dui et, tincidunt sodales ex. Nunc est dui, sodales sed mauris nec, auctor sagittis leo. Aliquam tincidunt, ex in facilisis elementum, libero lectus luctus est, non vulputate nisl augue at dolor. For more information, see \nameref{S1_Appendix}.
+The present study has explored how people use their past experience of advice, either with or without the yardstick objective feedback, to guide subsequent choice of advisors. 
+With feedback, people naturally prefer advisors who are objectively more reliable. 
+Absent feedback, people show a tendency to choose advisors who in the past have agreed with them more frequently (versus less frequently), an effect that may exacerbate self-reinforcing cycles of information seeking and belief updating. 
+Surprisingly, however, we did not observe a consistent preference for advisors who tend to agree over advisors who tend to be correct when feedback is absent. 
+The wide individual differences in preferences in this case present an intriguing avenue for future research.
 
 \section*{Supporting information}
 

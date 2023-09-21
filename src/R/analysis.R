@@ -42,12 +42,13 @@ theme_set(
 ### Functions -----------------------------------------------------------
 
 #' Turn a number into a </= X representation
-n2s <- function(n, digits = 4, limit = 10^-digits) 
-  if_else(
-    n < limit, 
-    glue('< {limit}'), 
+n2s <- function(n, digits = 4, limit = NULL) {
+  if (!is.null(limit)) {
+    if_else(n < limit, glue('< {limit}'), glue('= {round(n, digits)}'))
+  } else {
     glue('= {round(n, digits)}')
-  )
+  }
+}
 
 #' Go through the workspace and remove excluded pids from all tbls with a pid 
 #' field, creating backups along the way
@@ -495,11 +496,11 @@ for (E in dates) {
           map_lgl(
             d, 
             ~ mean(.$responseAnswerSide != .$responseAnswerSideFinal |
-              .$responseConfidence != .$responseConfidenceFinal) < minChangeRate
+                     .$responseConfidence != .$responseConfidenceFinal) < minChangeRate
           )
       )
   }
-      
+  
   E$exclusions <- E$exclusions %>% select(-d)
   
   do_exclusions(E$exclusions, envir = E)
