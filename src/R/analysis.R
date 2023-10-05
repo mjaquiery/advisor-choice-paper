@@ -42,7 +42,7 @@ theme_set(
 ### Functions -----------------------------------------------------------
 
 #' Turn a number into a </= X representation
-n2s <- function(n, digits = 4, limit = NULL) {
+n2s <- function(n, digits = 2, limit = NULL) {
   if (!is.null(limit)) {
     if_else(n < limit, glue('< {limit}'), glue('= {round(n, digits)}'))
   } else {

@@ -199,7 +199,7 @@ Matt Jaquiery\textsuperscript{1},
 Nick Yeung\textsuperscript{1*}
 \\
 \bigskip
-\textbf{1} ACC Lab, Department of Experimental Psychology, University of Oxford, UK
+\textbf{1} Department of Experimental Psychology, University of Oxford, UK
 \bigskip
 
 % Insert additional author notes using the symbols described below. Insert symbol callouts after author names as necessary.
@@ -266,7 +266,13 @@ d <- Bin %>%
 \end{flushleft}
 % Please keep the abstract below 300 words
 \section*{Abstract}
-Please keep the abstract below 300 words
+Previous research has shown that people are more influenced by advisors who are objectively more accurate, but also by advisors who tend to agree with their own initial opinions. 
+The present experiments extend these ideas to consider people's choices of who they receive advice from- the process of source selection. 
+Across a series of nine experiments, participants were first exposed to advisors who differed in objective accuracy, the likelihood of agreeing with the participants' judgments, or both, and then were given choice over who would advise them across a series of decisions. 
+Participants saw these advisors in the context of perceptual decision and general knowledge tasks, sometimes with feedback provided and sometimes without. 
+We found evidence that people can discern accurate from inaccurate advice even in the absence of feedback, but that without feedback they are biased to select advisors who tend to agree with them.
+When choosing between advisors who are accurate vs. likely to agree with them, participants overwhelmingly choose accurate advisors when feedback is available, but show wide individual differences in preference when feedback is absent. 
+These findings extend previous studies of advice influence to characterise patterns of advisor choice, with implications for how people select information sources and learn accordingly.
 
 
 % Please keep the Author Summary between 150 and 200 words
@@ -292,10 +298,9 @@ Advice utilisation also critically depends on decision makers’ degree of trust
 
 A previous line of work from our lab indicated that people tend to develop greater trust in, and therefore be more influenced by, advisors who agree with them more frequently, \cite{PescetelliYeung2021}.
 This effect is particularly strong when objective feedback is absent, but is still apparent when feedback is available (and hence when advice received can be evaluated against an objective standard).
-
 Although basing trust on agreement may initially seem inherently flawed — a circular form of reasoning that can only ever lead to strengthening one’s beliefs regardless of their accuracy — there are good reasons why agreement can be used as a proxy for accuracy when feedback is unavailable. 
 Based on the principle of the "wisdom of crowds", \cite{Galton1907} categorical decisions driven by a shared truth and unshared error will agree more frequently the greater the accuracy of the decisions (because they depend more upon the shared truth which brings them together than the unshared errors which may drive them apart). \cite{SollLarrick2009}
-In the absence of shared bias, agreement can therefore act as an indicator of accuracy: for any better-than-chance decision-maker of fixed ability the agreement rate of an advisor will be proportional to the accuracy of the advisor.
+In the absence of shared bias, agreement can therefore act as an indicator of accuracy: for any better-than-chance decision-maker of fixed ability, the agreement rate of an advisor will be proportional to the accuracy of the advisor.
 This relationship potentially enables learning about the quality of advice even without any objective indicators.
 Consistent with this idea, experimental participants have been shown to distinguish good versus bad advisors even when feedback is absent, \cite{CarlebachYeung2023} \cite{YanivKleinberger2000} and can even show sensitivity to features as subtle as the calibration between an advisor’s confidence and their objective accuracy. \cite{PescetelliYeung2021}
 However, the validity of agreement as an indicator of advice accuracy depends on the advisor and advisee making independent judgements: \cite{SollLarrick2009} If they share biases, or if the advisor deliberately provides advice that is tailored to the advisee’s pre-existing beliefs, then people will tend to over-trust advisors relative to their objective accuracy. 
@@ -306,7 +311,7 @@ Will people prefer to receive advice that is more likely to agree with them than
 In agent-based modelling of network dynamics, such biases in source selection have been shown to accelerate and accentuate the tendency of individuals to form self-reinforcing echo chambers of beliefs, \cite{PescetelliYeung2021} \cite{MadsenBaileyPilditch2018} indicating the potentially significant impact of these biases.
 However, empirical evidence for this kind of source selection behaviour, for example in studies of real-world media consumption, has been somewhat mixed. 
 The evidence that people do tend to seek out information from sources likely to agree with them is moderate (‘selective exposure’ \cite{HartAlbarracinEaglyBrechanLindbergMerrill2009}). 
-The evidence that people avoid information likely to disagree is poor (‘selective avoidance’, \cite{Jang2014} \cite{WeeksKsiazekHolbert2016} with evidence becoming less persuasive as tasks become more ecologically valid. \cite{SearsFreedman1967} \cite{NelsonWebster2017}  
+The evidence that people avoid information likely to disagree is poor (‘selective avoidance’, \cite{Jang2014} \cite{WeeksKsiazekHolbert2016}) with evidence becoming less persuasive as tasks become more ecologically valid. \cite{SearsFreedman1967} \cite{NelsonWebster2017}  
 
 A priori, cases can be made for biases both towards and against selecting sources that tend to agree with one’s pre-existing beliefs.
 It would make sense that people seek out information they are more likely to use, because all information acquisition comes with some kind of cost, even if only attentional and opportunity costs, and rational actors should maximise their benefit-cost trade-off. 
@@ -314,8 +319,8 @@ It may make sense for people to seek out information they are likely to agree wi
 It would also make sense, however, for people to seek out information from sources they disagree with: perhaps those we disagree with have access to evidence or reasons we had not considered; or perhaps learning about others’ views will allow us to better counter them and convert their adherents. \cite{Freedman1965} 
 People may even prefer a balanced or random diet of information because they feel unable to judge relative quality, or because all the reasons above are pulling them in different directions. 
 
-We report a series of nine experiments in which participants learned about a pair of advisors and were given the opportunity to choose between them.
-The advisors were computerised agents whose advice was programmed to vary in accuracy and/or to predominantly either agree with the participants' choice or identify the correct answer.
+We report a series of nine experiments in which participants learned about a pair of advisors and were then given the opportunity to choose between them.
+The advisors were computerised agents whose advice was programmed to vary in accuracy and/or to predominantly either agree or disagree with the participants' choice.
 We hypothesised that participants would prefer to receive advice from advisors who agreed with them more often, and that this effect would be reduced or even absent when feedback was provided during the learning phase.
 
 The experiments used two different tasks. 
@@ -401,16 +406,16 @@ We deliberately did not collect demographic data from participants so we do not 
 All participants were at least 18 years of age, confirmed by the requirements for possessing an account on the Prolific platform and by explicit confirmation when giving informed consent.
 Participants were excluded from the Dots Task for:
 having initial accuracy below \Sexpr{accuracyRange[1] * 100}\% or above \Sexpr{accuracyRange[2] * 100}\% (N = \Sexpr{x.acc_oob});
-and having a confidence distribution that was too compressed or too skewed to generate contingent advice (N = \Sexpr{x.conf_compressed}).
+ having a confidence distribution that was too compressed or too skewed to generate contingent advice (N = \Sexpr{x.conf_compressed}).
 Participants were excluded from the Dates Task for:
 having too many trials with data saving issues, or that took too long (N = \Sexpr{x.trial_count});
-and adjusting their after advice on fewer than \Sexpr{minChangeRate * 100}\% of trials (N = \Sexpr{x.no_advice});
+ adjusting their after advice on fewer than \Sexpr{minChangeRate * 100}\% of trials (N = \Sexpr{x.no_advice});
 using translation software to translate questions (N = \Sexpr{x.translation}).
 Overall, \Sexpr{pp.x} participants were excluded (some participants met multiple exclusion criteria).
 Data from \Sexpr{pp.i} participants formed the data set analysed in the results section below.
 
 Participants were recruited to the experiment via the Prolific Academic participant recruitment platform (\url{https://prolific.co}).
-Participants were prevented from taking the experiment if they had participated in one of the other experiments in the thesis, or if they had an overall approval rating on Prolific of less than 95/100.
+Participants were prevented from taking the experiment if they had participated in one of the other experiments in the series, or if they had an overall approval rating on Prolific of less than 95/100.
 After reading the description of the experiment and accepting the work on the recruitment platform, participants took part in the experiment by clicking a link to the website that housed the experiment, hosted on our lab web server.
 Upon landing on the experiment page, participants were directed to the participant information and consent pages.
 After consent was obtained, they were routed to the correct experiment page, and the experiment began.
@@ -454,7 +459,7 @@ tc.dates <- lapply(1:length(dates), \(i)
 Nine experiments were conducted, all with the same overall structure: Participants first completed a familiarisation phase in which they encountered two advisors in separate blocks (order counterbalanced across participants), then completed a test phase in which they chose which of their two advisors to receive advice from on each trial.
 The nine experiments were created via factorial combination of the task performed (Dots Task, Dates Task without feedback, or Dates Task with feedback) and the pairing of advisors experienced (low versus high accuracy; low versus high agreement; high accuracy versus high agreement — details below). 
 Thus, Experiments 1A, 2A and 3A used the Dots Task, Experiments 1B, 2B and 3B used the Dates Task without feedback, and Experiments 1C, 2C and 3C used the Dates task with feedback, with the respective experiments (A-C) in each series differing according to the types of advisors experienced.
-The Dots Task was not performed with feedback, because our lab has previously reported experiments contrasting the presence and absence of feedback. \cite{PescetelliYeung2021}
+The Dots Task was not performed with feedback, because our lab has previously reported experiments contrasting the presence and absence of feedback using this task. \cite{PescetelliYeung2021}
 
 Trials of the Dots Task and the Dates Task both followed the same general Judge-Advisor System structure. \cite{YanivKleinberger2000}
 On each trial, participants made an initial decision on the decision-making task.
@@ -465,9 +470,9 @@ An overview of the tasks is shown in Figure~\ref{fig-method}.
 
 In familiarisation blocks, participants received advice from one of two fixed advisors, whereas in test blocks the participants could choose which of the two advisors to receive advice from on each trial after making their initial estimate.
 After seeing the advice, participants input a final decision.
-The advice was always computer-generated, although the specifics of the generating procedure varied between experiments to produce advisors with different styles of advice-giving.
+The advice was always computer-generated, with the specifics of the generating procedure varied between experiments to produce advisors with different styles of advice-giving.
 
-Participants saw feedback each trial indicating whether or not their own final decision was correct only during initial practice questions, unless they were assigned to the feedback condition of the Dates Task, in which case they received feedback on all trials except the final block of advisor choice trials.
+Participants saw feedback each trial indicating whether or not their own final decision was correct only during initial practice questions, unless they were assigned to the feedback condition of the Dates Task, in which case they received feedback on familiarisation trials. Feedback was never presented during advisor choice trials.
 After all trials were completed, debrief questions were presented and feedback provided concerning the participant's performance, including a stable link to the feedback and a payment code.
 The debrief questions included a questionnaire asking participants to rate their advisors' likeability, ability, and benevolence \cite{MayerDavisSchoorman1995}, and offering them the opportunity to provide free-text comments on the advisors and the experiment in general.
 These questionnaire responses are not analysed because they were generally uninformative.
@@ -494,7 +499,7 @@ The decision-making task in the Dots Task was judging which of two briefly (300m
 The dots did not move during the presentation of the stimulus.
 The Dots Task includes a staircasing procedure that varies the difference in the number of dots in each box dynamically using a 2-up 1-down procedure.
 The staircasing procedure results in participants converging on an initial estimate accuracy of around 71\%.
-The number of dots was determined by the difficulty of the trial: the box with the least dots had 200 - the difficulty, while the box with the most had 200 + the difficulty.
+The number of dots was determined by the difficulty of the trial \textit{d}: the box with the least dots had 200 - \textit{d} dots, while the box with the most had 200 + \textit{d} dots.
 
 The Dots Task began with a simple interactive tutorial explaining the task and the response bar, followed by two practice blocks of \Sexpr{tc.dots$n[2]} trials so that participants could get used to the task and the staircasing algorithm could titrate the difficulty appropriately (the staircasing continued during the remainder of the experiment).
 Participants then performed \Sexpr{tc.dots$n[3]} trials with advice to get used to receiving and using advice.
@@ -510,11 +515,14 @@ The Dates Task used a decision-making task that required participants to identif
 In each trial, participants saw a text representation of an event that occurred in a specific year of the 20th Century, for example "Roger Bannister runs the first 4-minute mile", which occurred in 1954; or "US-led coalition expels the Iraqi Army from Kuwait in Operation Desert Storm", which occurred in 1991. 
 The participant also saw a date written below the event, and two bars labelled 'Before' (on the left) and 'After' (on the right). 
 Participants indicated their answers by selecting one of the bars, choosing a point higher up the bar the more confident they were in their choice.
+Advice comprised the advisor's avatar presented on either the left (advising "Before") or right (advising "After") of the screen as show in Figure~\ref{fig-method}.
 
 The (categorical) Dates Task started with an interactive tutorial, \Sexpr{tc.dates$n[4] - 2} warm-up questions to give participants a chance to calibrate their confidence, and a tutorial on advice.
 Thereafter the participants performed three blocks of experimental trials. 
 In the first two blocks, participants were advised by a single advisor, and in the final block they were able to choose between those advisors. 
 The familiarisation blocks where advisors were assigned automatically consisted of \Sexpr{round(tc.dates$n[2])} trials, and the test block containing a choice of advisors contained \Sexpr{round(tc.dates$n[3])} trials.
+During warm-up trials and, for some groups of participants also during familiarisation block trials, feedback was provided following participants' final decisions.
+Feedback was presented as a gold star displayed on the correct side of the screen, with the actual year the event occurred printed below.
 
 \subsubsection*{Continuous Dates Task}
 
@@ -527,6 +535,8 @@ Instead, participants indicated their decision by dragging a marker onto a timel
 Participants could choose from markers that were \Sexpr{markers$m[1]}, \Sexpr{markers$m[2]}, and \Sexpr{markers$m[3]} years wide, worth \Sexpr{markers$v[1]}, \Sexpr{markers$v[2]}, and \Sexpr{markers$v[3]} points, respectively.
 Points were scored on trials where the participant's marker covered the year in which the event actually occurred.
 Points were arbitrary, and unrelated to remuneration, but were included to encourage participants to vary marker size as a function of their confidence in their answer.
+Advice in this task comprised a timeline marker identified by the advisor's avatar image. 
+Feedback, if provided, consisted of text at the top of the screen indicating the correct answer year and a gold star placed on the timeline in the location corresponding with the answer.
 
 The experiment trial structure was identical to that for the categorical Dates Task, with the exception that some of the participants experienced only \Sexpr{round(tc.dates$n[13])} trials in each familiarisation block because the preregistered replication (see below) for this experiment was shortened.
 
@@ -538,7 +548,7 @@ For the Dots Task and the categorical version of the Dates Task, advice was cons
 Conversely, advice was considered 'agreeing' if the advice endorsed the same option the participant chose as their initial estimate, regardless of the accuracy of that initial estimate.
 
 For advisors with fixed accuracy profiles, agreement with the participant was probabilistic and contingent on the correctness of the participant's initial estimate, producing advice profiles detailed in Table~\ref{advice}.
-Reflecting straightforward probabilities, when participants performed the task at above-chance levels in their initial decisions, high accuracy advisors were more likely to agree with those initial decision than were low accuracy advisors.
+Reflecting straightforward probabilities, when participants performed the task at above-chance levels in their initial decisions, high accuracy advisors were more likely to agree with those initial decisions than were low accuracy advisors.
 
 << advice calculations, include=FALSE >>=
 
@@ -592,6 +602,7 @@ In the continuous version of the Dates Task (which featured high accuracy versus
 The high accuracy advisor's advice was drawn from a normal distribution around the correct year, while the high agreement advisor's advice was drawn from a normal distribution around the participant's initial estimate (standard deviation = \Sexpr{dates$ava$AdvisedTrial$advisor0confidenceVariation %>% unique()} years).
 On \Sexpr{bind_rows(dates$ava$AdvisedTrial, dates$ava.pre$AdvisedTrial) %>% transmute(x = advisor0actualType == "disagreeReflected", x = x * 100) %>% pull(x) %>% mean() %>% round(1)}\% of trials, advisors gave advice that was neither correct nor agreeing, by drawing from a normal distribution around a point on the opposite side of the correct answer from the initial estimate (so that, for example, if a participant estimated the date of Roger Bannister’s historic run as 1960, the centre of the advice distribution would fall at 1948, symmetrically opposite the estimate around the reference point of 1954).
 These trials were included to provide a subset of trials on which advisor influence might be measured without the confound of the advice itself (which differed across the two advisors by design).
+Analyses of advisor influence are not reported here (but can be found in \cite{Jaquiery2021}).
 
 \subsection*{Preregistration}
 
@@ -651,6 +662,7 @@ The data for all analyses below is available in an R package hosted on GitHub. \
 The results of each study are presented as two-sided one-sample Student's \textit{t}-tests, with alpha set to 0.05.
 No correction is made for multiple comparisons because each test pertains to a specific hypothesis within a discrete experiment.
 All tests are reported with the structure $t(\text{DF}) = \text{X}, p = \text{X}, \mu = \text{X} [\text{X}, \text{X}]$ vs $\mu_0 = \text{X}, d = \text{X}$ where $\text{X}$ stands for the number in question, $\text{DF}$ gives the degrees of freedom of the \textit{t}-test, $p$ the \textit{p}-value, $\mu$ the sample mean with 95\% confidence intervals in square brackets, $\mu_0$ the value to which the sample mean is compared, and $d$ the Cohen's $d$ measure of effect size.
+Conditional means are reported as $M_{condition}$ or $M_{conditionA|conditionB}$ for interactions.
 
 Analysis was conducted in R version \Sexpr{paste0(R.version$major, ".", R.version$minor)}, \cite{rcoreteam2021} and the manuscript was prepared in Rstudio (version 1.4.1717) \cite{rstudioteamRStudioIntegratedDevelopment2021} using the \texttt{knitr} \cite{Xie2015} and \texttt{tidyverse} \cite{wickhamWelcomeTidyverse2019} packages.
 A complete list of packages and versions used, and other software environment details, are included in the supporting information (\nameref{env}).
@@ -741,8 +753,9 @@ aov_conf_dates_cat <- Familiarisation %>%
         ) %>%
         group_by(`Initial estimate accuracy`, pid) %>%
         summarise(
-          `Initial estimate` = mean(responseConfidenceScore),
-          `Final decision` = mean(responseConfidenceScoreFinal),
+          # multiply by 100 for comparability with Dots
+          `Initial estimate` = mean(responseConfidenceScore) * 100,
+          `Final decision` = mean(responseConfidenceScoreFinal) * 100,
           .groups = 'drop'
         ) %>%
         pivot_longer(cols = c(`Initial estimate`, `Final decision`), 
@@ -771,7 +784,7 @@ dates_cont_conf_summary <- Familiarisation %>%
   filter(!is.na(responseMarkerWidth)) %>%
   group_by(responseMarkerWidth) %>%
   summarise(error = mean(responseError)) %>%
-  mutate(s = glue("$M_{{Error|Marker{responseMarkerWidth}}} = {sprintf('%.02f', error)}$"))
+  mutate(s = glue("$M_{{Error|Marker{responseMarkerWidth}}} = {round(error)}$"))
 
 aov_acc_dots <- familiarisation %>% 
   nest(summary=-E) %>%
@@ -798,7 +811,8 @@ aov_acc_dots <- familiarisation %>%
           Decision = factor(str_to_sentence(Decision)),
           Advisor = factor(Advisor)
         ) %>%
-        select(pid, accuracy, Decision, Advisor)
+        select(pid, accuracy, Decision, Advisor) %>%
+        arrange(Advisor, Decision)
       aov_acc <- ez::ezANOVA(
         d, 
         dv = accuracy,
@@ -806,7 +820,12 @@ aov_acc_dots <- familiarisation %>%
         within = c(Advisor, Decision)
       )
       
-      mm_acc <- marginalMeans(d, accuracy, pid, "Improvement")
+      
+      mm_acc <- d %>%
+        select(pid, accuracy, Decision, Advisor) %>%
+        arrange(Advisor, Decision) %>%
+        mutate(Advisor = str_extract(Advisor, ".+")) %>%
+        marginalMeans(accuracy, pid, "Improvement")
       summariseANOVA(aov_acc$ANOVA, mm_acc)
     })
   ) %>%
@@ -838,6 +857,7 @@ aov_acc_dates_cat <- Familiarisation %>%
       
       mm_acc <- d %>%
         select(pid, Accuracy, Response, Advisor) %>%
+        arrange(Advisor, Response) %>%
         mutate(Advisor = str_extract(Advisor, ".+")) %>%
         marginalMeans(Accuracy, pid, "Improvement")
       
@@ -891,10 +911,10 @@ tts <- d %>%
   unnest(c(t, m)) %>%
   mutate(
     s = glue(
-      "$t({parameter}) {n2s(statistic, 3)}$, ",
-      "$p {n2s(p.value, limit = 0.001)}$, ",
-      "$\\mu {n2s(y, 3)}$ $[{round(ymin, 3)}, {round(ymax, 3)}]$ vs $\\mu_0 = 0.500$, ",
-      "$d {n2s(d, 3)}$"
+      "$t({parameter}) {n2s(statistic)}$, ",
+      "$p {n2s(p.value, 3, limit = 0.001)}$, ",
+      "$\\mu {n2s(y)}$ $[{round(ymin, 2)}, {round(ymax, 2)}]$ vs $\\mu_0 = 0.500$, ",
+      "$d {n2s(d)}$"
     )
   ) %>%
   arrange(task, experiment, feedback)
@@ -918,10 +938,10 @@ tt.cca <- bind_rows(
   unnest(cols = c(t, m)) %>%
   mutate(
     s = glue(
-      "$t({parameter}) {n2s(statistic, 3)}$, ",
-      "$p {n2s(p.value, limit = 0.001)}$, ",
-      "$\\mu {n2s(y, 3)}$ $[{round(ymin, 3)}, {round(ymax, 3)}]$ vs $\\mu_0 = 0.500$, ",
-      "$d {n2s(d, 3)}$"
+      "$t({parameter}) {n2s(statistic)}$, ",
+      "$p {n2s(p.value, 3, limit = 0.001)}$, ",
+      "$\\mu {n2s(y)}$ $[{round(ymin, 2)}, {round(ymax, 2)}]$ vs $\\mu_0 = 0.500$, ",
+      "$d {n2s(d)}$"
     )
   )
 
@@ -958,11 +978,11 @@ by_feedback <- d %>%
   unnest(c(t, m_feedback, m_no_feedback)) %>%
   mutate(
     s = glue(
-      "$t({round(parameter, 2)}) {n2s(statistic, 3)}$, ",
-      "$p {n2s(p.value, limit = 0.001)}$, ",
-      "$M_{{feedback}} {n2s(y, 3)}$ $[{round(ymin, 3)}, {round(ymax, 3)}]$, ",
-      "$M_{{no feedback}} {n2s(y_nf, 3)}$ $[{round(ymin_nf, 3)}, {round(ymax_nf, 3)}]$, ",
-      "$|d| {n2s(d, 3)}$"
+      "$t({round(parameter, 2)}) {n2s(statistic)}$, ",
+      "$p {n2s(p.value, 3, limit = 0.001)}$, ",
+      "$M_{{feedback}} {n2s(y)}$ $[{round(ymin, 2)}, {round(ymax, 2)}]$, ",
+      "$M_{{no feedback}} {n2s(y_nf)}$ $[{round(ymin_nf, 2)}, {round(ymax_nf, 2)}]$, ",
+      "$|d| {n2s(d)}$"
     )
   ) %>%
   arrange(experiment)
@@ -1150,7 +1170,7 @@ In the Dates Task with feedback (Experiment 2C), participants did not appear to 
 Collectively, these findings are consistent with our key predictions that participants will exhibit a preference for advisors who have previously tended to agree with a participant’s own initial decisions, but that this tendency will be reduced or even absent if feedback is provided. 
 However, the between-experiment comparison of Experiments 2B and 2C was not significant (\Sexpr{by_feedback$s[2]}), reflecting the high degree of inter-individual variability in preferences apparent in both experiments.
 
-Our underlying theory suggests that the participants learn to trust accurate advisors over less accurate advisors when feedback is absent because the accurate advisors agree with them more frequently.
+Our underlying theory suggests that participants learn to trust accurate advisors over less accurate advisors when feedback is absent because the accurate advisors agree with them more frequently.
 If this were the case, we might also expect an agreeing advisor to be preferred to an accurate advisor when directly contrasted. 
 However, we did not observe this expected effect in our final series of experiments, either with the Dots Task (Experiment 3A: \Sexpr{tts$s[9]}) or the Dates Task (Experiment 3B: \Sexpr{tts$s[5]}).
 The full range of idiosyncratic advisor preferences was apparent in both datasets, with some participants choosing the high accuracy advisor on all trials, some choosing the high agreement advisor on all trials, and gradations in between—averaging to no consistent preference overall. 
@@ -1191,8 +1211,8 @@ d.agr <- bind_rows(
   unnest(cor) %>%
   mutate(
     s = glue(
-      "$r {n2s(estimate, 3)}$ [{round(conf.low, 3)}, {round(conf.high, 3)}], ",
-      "$p {n2s(p.value, 4)}$"
+      "$r {n2s(estimate)}$ [{round(conf.low, 2)}, {round(conf.high, 2)}], ",
+      "$p {n2s(p.value, 3, limit = 0.001)}$"
     )
   ) %>%
   arrange(task, feedback)
@@ -1226,8 +1246,8 @@ d.acc <- bind_rows(
   unnest(cor) %>%
   mutate(
     s = glue(
-      "$r {n2s(estimate, 3)}$ [{round(conf.low, 3)}, {round(conf.high, 3)}], ",
-      "$p {n2s(p.value, 4)}$"
+      "$r {n2s(estimate)}$ [{round(conf.low, 2)}, {round(conf.high, 2)}], ",
+      "$p {n2s(p.value, 3, limit = 0.001)}$"
     )
   ) %>%
   arrange(task, feedback)
@@ -1242,7 +1262,7 @@ This should not be taken as a strong indicator that these features are unrelated
 
 \section*{Discussion}
 
-Participants performed online experiments in a Judge-Advisor System in which they learned about, and then chose between, advisors who varied in their tendency to agree with their initial estimates or to provide correct advice.
+Participants performed online experiments in a Judge-Advisor System in which they learned about, and then chose between, advisors who varied in their tendency to agree with the participants' initial estimates or to provide correct advice.
 We had expected that participants would prefer to receive advice from advisors who were more likely to agree with them when they lacked objective feedback against which to evaluate the quality of advice.
 Consistent with this, we observed systematic preferences for accuracy and agreement in the Dots Task, and for agreement alone in the Dates Task. 
 There were no clear preferences when accuracy and agreement were pitted against one another.
@@ -1252,14 +1272,16 @@ Our underlying theory, that people use advice agreement as a proxy for accuracy 
 The results of the Dots Task experiments were consistent with the idea that people's assessments of accuracy are based on agreement: both agreement and accuracy led to advisors being preferred. 
 In this way, our findings replicate previous observations that people are able to discern the quality of advice they receive even when feedback is absent, \cite{CarlebachYeung2023} \cite{YanivKleinberger2000} and tend to over-trust advisors who agree with them more frequently, \cite{PescetelliYeung2021} and extend these findings to show the impact of this trust extends to their choice of advisors.  
 
-Contrary to our expectations, however, when an accurate and agreeing advisor were contrasted, no systematic preferences were observed.
+Contrary to our expectations, however, when participants chose between an accurate and agreeing advisor, no systematic preferences were observed.
 It is possible that the experiments in which the high accuracy and high agreement advisors were contrasted did not have sufficient resolution to differentiate the advisors in the participants' minds.
 This explanation seems unlikely because the magnitude of the differences along the dimensions of agreement and accuracy is similar to the magnitudes of differences in the other two experiments where effects were observed.
-Another explanation may be that agreeing advice as generated in these experiments provided almost no information (being mostly dependent on the participant's initial estimate rather than the correct answer), and thus a natural correlation between accuracy and agreement was disrupted that might typically have self-reinforcing effects. 
+Another explanation may be that agreeing advice as generated in these experiments provided almost no information (being mostly dependent on the participant's initial estimate rather than the correct answer), and thus a natural correlation between accuracy and agreement was disrupted.
+In the absence of shared bias, agreement rates will be proportional to decision-makers' accuracy, and accuracy for well-calibrated participants will be proportional to confidence. 
+Thus, participants ought to expect higher agreement rates when they were more confident and lower agreement rates when they were less confident; a contingency that was not implemented in our design. 
 Indeed, if the confidence-mediated agreement theory of trust updating \cite{PescetelliYeung2021} is correct, it is possible participants viewed agreement when they were very un-confident as a source of suspicion.
-It is also possible that the lack of any systematic effect in advisor preference is the result of averaging over two strong but opposed preferences.
-This may be the case: an inspection of the data presented in Figure~\ref{fig-main-result} shows individual participants' preferences spread quite homogeneously throughout the range of possible values; suggesting some participants did have quite strong preferences for each of the advisors.
-This pattern is particularly notable in the Dots Task, and, given that the other experiments with this task tended to show significant clustering around balanced choices of advisors, suggests that deviations from balanced choices are indicative of real preferences.
+It is also possible that the lack of any systematic effect in advisor preference is the result of averaging over two strong but opposed preferences, for accuracy and agreement, that here were set in opposition.
+This may be the case: an inspection of the data presented in Figure~\ref{fig-main-result} shows individual participants' preferences spread quite homogeneously throughout the range of possible values, suggesting some participants did have quite strong preferences for each of the advisors.
+This pattern is particularly notable in the Dots Task given that our other experiments with this task tended to show significant clustering around a balanced choices of advisors, suggests that deviations from balanced choices are indicative of real preferences.
 Nevertheless, it remains possible that people develop unsystematic preferences for advisors based on arbitrary criteria when there is no task-relevant way of differentiating them.
 
 The two tasks, although very different, produced overall similar results -- the only major qualitative difference was a systematic preference for high over low accuracy in the Dots Task where none was found for the Dates Task.
@@ -1270,7 +1292,7 @@ The agreement differences between the advisors in the accuracy experiments, as s
 Consistent across tasks was the finding that, when feedback is absent, people preferred to hear from advisors who agreed with them more frequently.
 The consequences of preferentially sampling from sources that are more likely to confirm one's initial opinions are potentially harmful, from making elementary reasoning mistakes \cite{Wason1968} through to creating polarised political environments wherein only like-minded people have a voice. \cite{Sunstein2002} \cite{MadsenBaileyPilditch2018}
 Indeed, as shown in earlier work from our lab, using agreement as a proxy for accuracy leads to simulated agents forming echo-chambers. \cite{PescetelliYeung2021}
-This process is accelerated where agents selectively sample advice.
+This process is accelerated where agents selectively sample advice. \cite{MadsenBaileyPilditch2018}
 In this context, it is somewhat reassuring to observe that in our experiments participants only preferred agreement where the alternative was disagreement: when agreement was contrasted with accuracy participants expressed a wide range of preference strengths and directions.
 This finding that source selection behaviour is less confirmation-seeking than suspected ties in neatly with work in the selective approach and avoidance literature that indicates people show relatively little partisan discrimination in their media consumption, \cite{SearsFreedman1967} \cite{Garrett2009} \cite{Jang2014} \cite{NelsonWebster2017} and evidence in favour tends to come from more artificial rather than naturalistic designs. \cite{SchmuckTribastoneMatthesMarquartBergel2020}
 Potentially, the tendency to prefer agreeing over accurate advice may be a stable trait subject to individual differences, perhaps related concepts such as need for cognition \cite{CacioppoPetty1982} or openness to experience (although recent work on information-seeking and openness does not support this suggestion \cite{JachSmillie2021}).
@@ -1301,7 +1323,7 @@ The wide individual differences in preferences in this case present an intriguin
 
 \section*{Acknowledgments}
 We acknowledge the collaboration and support of the ACC Lab members.
-This project was funded as part of Medical Research Council (GB) grant 1943590. 
+This project was funded as part of Medical Research Council (GB) graduate scholarship grant 1943590. 
 
 \section*{Author contributions}
 MJ: Conceptualization, Data Curation, Formal Analysis, Funding Acquisition, Investigation, Methodology, Project Administration, Resources, Software, Validation, Visualization, Writing – Original Draft. NY: Conceptualization, Funding Acquisition, Methodology, Resources, Supervision, Writing – Review \& Editing.
