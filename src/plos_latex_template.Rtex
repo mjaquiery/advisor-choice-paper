@@ -342,6 +342,12 @@ Across experiments, we also varied whether the Dates Task was performed with or 
 
 Ethical approval for the studies in the thesis was granted by the University of Oxford Medical Sciences Interdivisional Research Ethics Committee (References: R55382/RE001; R55382/RE002).
 
+Data were collected on the Prolific web platform in phases (typically lasting a few hours per experiment),
+between 16th of September 2018 and 23rd June 2020.
+
+Participants provided consent by checking checkboxes on an online form.
+All participants were at least 18 years of age, confirmed by the requirements for possessing an account on the Prolific platform and by explicit confirmation when giving informed consent.
+
 \subsection*{Participants}
 
 << calculate total participants, include=FALSE >>=
@@ -403,7 +409,6 @@ markers <- dates$ava$Test %>%
 
 Before exclusions, we collected data over the internet from \Sexpr{pp.i + pp.x} participants across these nine experiments. 
 We deliberately did not collect demographic data from participants so we do not detail their ages, gender identity, location, eyesight, or language ability.
-All participants were at least 18 years of age, confirmed by the requirements for possessing an account on the Prolific platform and by explicit confirmation when giving informed consent.
 Participants were excluded from the Dots Task for:
 having initial accuracy below \Sexpr{accuracyRange[1] * 100}\% or above \Sexpr{accuracyRange[2] * 100}\% (N = \Sexpr{x.acc_oob});
  having a confidence distribution that was too compressed or too skewed to generate contingent advice (N = \Sexpr{x.conf_compressed}).

@@ -625,3 +625,19 @@ Bin <- bind_rows(
       influence_capped = advisor0InfluenceCapped
     )
 )
+
+# Data collection dates ---------------------------------------------------
+
+# dots
+bind_rows(
+  select(cca$participants, starts_with('time')),
+  select(dots$acc$participants, starts_with('time')),
+  select(dots$agr$participants, starts_with('time')),
+  select(dots$ava$participants, starts_with('time'))
+) %>%
+  summarise(startTime = min(timeStart), endTime = max(timeEnd))
+# 2018-09-16 - 2020-06-23
+
+min(Familiarisation$serverTime, na.rm = T)  # 2020-05-13
+max(Familiarisation$serverTime, na.rm = T)  # 2020-06-22
+

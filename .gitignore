@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 *.pdf
+!ethics-checklist/*.pdf
 *.tex
 *.log
 *.gz
