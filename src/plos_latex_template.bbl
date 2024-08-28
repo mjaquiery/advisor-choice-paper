@@ -172,11 +172,22 @@ Nelson JL, Webster JG.
 \newblock Social Media + Society. 2017;3(3):205630511772931.
 \newblock doi:{10.1177/2056305117729314}.
 
+\bibitem{mcpherson2001birds}
+McPherson M, Smith-Lovin L, Cook JM.
+\newblock Birds of a feather: Homophily in social networks.
+\newblock Annual review of sociology. 2001;27(1):415--444.
+
 \bibitem{Freedman1965}
 Freedman JL.
 \newblock Confidence, utility, and selective exposure: A partial replication.
 \newblock Journal of Personality and Social Psychology. 1965;2(5):778–780.
 \newblock doi:{10.1037/h0022670}.
+
+\bibitem{schonbrodt2017sequential}
+Schonbrodt FD, Wagenmakers EJ, Zehetleitner M, Perugini M.
+\newblock Sequential hypothesis testing with Bayes factors: Efficiently testing
+  mean differences.
+\newblock Psychological methods. 2017;22(2):322.
 
 \bibitem{MayerDavisSchoorman1995}
 Mayer RC, Davis JH, Schoorman FD.
